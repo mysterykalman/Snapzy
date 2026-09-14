@@ -298,7 +298,7 @@ final class AnnotateSensitiveRedactionService {
 
     let text = try await textRegions
     let faces = await faceRegions
-    return AnnotateSensitiveRedactionResult(regions: mergeOverlappingRegions(text + faces))
+    return AnnotateSensitiveRedactionResult(regions: Self.mergeOverlappingRegions(text + faces))
   }
 
   private static func detectTextRegions(
