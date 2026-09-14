@@ -24,6 +24,14 @@ reused, adapted, or materially informed by an external/donor repository.
 |---|---|---|---|---|---|
 | CI build artifact pipeline | Capture-Snapzy `ci.yml`, `release-publish.yml` (existing) | N/A (own repo) | Reused pattern | `.github/workflows/dev-artifact.yml` | No |
 | BrowserBridge transport (Unix-socket IPC + Chrome Native Messaging framing/protocol) | Capso-Capture `Packages/BrowserBridgeKit` | BSL 1.1 (personal use permitted) | Reused (ported near-verbatim; renamed `Capso`/bundle-ID identifiers to Snapzy equivalents) | `Packages/BrowserBridgeKit/**`, `Snapzy/Services/BrowserBridge/BrowserBridgeCoordinator.swift` | No (BSL has no attribution clause; provenance noted in file header comments) |
+| Metadata stripping (EXIF/GPS/IPTC re-encode) | Capture `mac/Sources/CaptureCore/MetadataStripper.swift` | Owned by user (no third-party license) | Reused near-verbatim | `Snapzy/Services/Privacy/MetadataStripper.swift` | No |
+| Privacy preflight (email/phone/credit-card/API-key/IP/confidential-term detection) | Capture `mac/Sources/CaptureCore/PrivacyPreflight.swift` | Owned by user | Reused near-verbatim | `Snapzy/Services/Privacy/PrivacyPreflight.swift` | No |
+| Smart Redact (OCR-line-based redaction proposals) | Capture `mac/Sources/CaptureCore/SmartRedact.swift` | Owned by user | Adapted (Capture's `Region` wrapper replaced with plain `CGRect`; Snapzy has no equivalent abstraction elsewhere) | `Snapzy/Services/Privacy/SmartRedact.swift` | No |
+| Client-safe export preset (OCR scan + metadata strip coordinator) | Capture `mac/Sources/CaptureVision/ClientSafeExportPreparer.swift` | Owned by user | Adapted (Capture's own `TextRecognizer` OCR wrapper replaced with Snapzy's existing, more mature `OCRService` — Snapzy already has a stronger OCR pipeline, so KEEP SNAPZY applied here rather than porting a redundant one) | `Snapzy/Services/Privacy/ClientSafeExportPreparer.swift` | No |
+| PDF export (multi-page, password/permissions, tall-image pagination) | Capture `mac/Sources/CapturePDF/PDFExport.swift` | Owned by user | Reused near-verbatim | `Snapzy/Services/Export/PDFExport.swift` | No |
+| PDF permanent redaction (rasterize targeted page, re-embed others as vector) | Capture `mac/Sources/CapturePDF/PDFRedactor.swift` | Owned by user | Reused near-verbatim | `Snapzy/Services/Export/PDFRedactor.swift` | No |
+| Contact sheet generator (grid/vertical/horizontal layouts) | Capture `mac/Sources/CaptureCore/ContactSheetGenerator.swift` | Owned by user | Adapted (Capture's `ColorHex` helper replaced with Snapzy's existing `SnapzyConfigurationColor`) | `Snapzy/Services/Export/ContactSheetGenerator.swift` | No |
+| WCAG contrast checker (ratio/level/suggest-compliant-color) | Capture `mac/Sources/CaptureCore/ContrastChecker.swift` | Owned by user | Reused near-verbatim | `Snapzy/Services/Accessibility/ContrastChecker.swift` | No |
 
 _(Rows are added as each subsystem migration lands; see individual PR/commit messages for detail.)_
 
