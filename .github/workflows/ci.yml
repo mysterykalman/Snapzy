@@ -2,7 +2,7 @@ name: CI Build Check
 
 on:
   push:
-    branches: [master]
+    branches: [master, capture/integration]
   pull_request:
     branches: [master]
   workflow_dispatch: {}
