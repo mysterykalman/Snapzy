@@ -417,15 +417,69 @@ async function runFullPageCaptureTests() {
   }
 }
 
-// NOTE: two upstream end-to-end blocks that load element-accessibility-
-// inspector.js and typography-features-inspector.js alongside content.js
-// are intentionally omitted here -- those content scripts haven't been
-// ported into this repo yet (see docs/REFERENCE_PROVENANCE.md). content.js
-// already guards both accessibilityJSON and variableFontAxes/openTypeFeatures
-// for their absence (see the "accessibilityJSON is null" and typography
-// checks earlier in this file), so this omission doesn't hide a gap --
-// it just doesn't yet test integration with files that don't exist here.
-// Port those two inspectors' tests back in alongside them.
+// --- accessibilityJSON is populated end-to-end when both content
+// scripts are actually loaded together, in real manifest.json order ---
+{
+  const dom = new JSDOM(
+    `<html><body><main><button id="cta">Buy now</button></main></body></html>`,
+    { url: "https://example.com/pricing", runScripts: "outside-only", pretendToBeVisual: true }
+  );
+  const window = dom.window;
+  const sentMessages = [];
+  let inspectMessageListener = null;
+  window.chrome = {
+    runtime: {
+      sendMessage: (message) => sentMessages.push(message),
+      onMessage: { addListener: (fn) => { inspectMessageListener = fn; } }
+    }
+  };
+  const vmContext = dom.getInternalVMContext();
+  vm.createContext(vmContext);
+  vm.runInContext(fs.readFileSync(path.join(__dirname, "..", "src", "content.js"), "utf8"), vmContext);
+  vm.runInContext(fs.readFileSync(path.join(__dirname, "..", "src", "element-accessibility-inspector.js"), "utf8"), vmContext);
+
+  inspectMessageListener({ kind: "capture.inspect.toggle" });
+  const button = window.document.getElementById("cta");
+  button.dispatchEvent(new window.MouseEvent("click", { bubbles: true, cancelable: true }));
+
+  const accessibility = JSON.parse(sentMessages[0].payload.accessibilityJSON);
+  check(
+    "accessibilityJSON is populated when element-accessibility-inspector.js is loaded alongside content.js",
+    accessibility.role === "button" && accessibility.accessibleName === "Buy now" && accessibility.focusable === true
+  );
+}
+
+// --- typographyJSON's variableFontAxes/openTypeFeatures are populated
+// end-to-end when typography-features-inspector.js is loaded alongside
+// content.js ---
+{
+  const dom = new JSDOM(
+    `<html><body><button id="cta" style="font-variation-settings: 'wght' 650; font-feature-settings: 'liga' 1;">Buy now</button></body></html>`,
+    { url: "https://example.com/pricing", runScripts: "outside-only", pretendToBeVisual: true }
+  );
+  const window = dom.window;
+  const sentMessages = [];
+  let inspectMessageListener = null;
+  window.chrome = {
+    runtime: {
+      sendMessage: (message) => sentMessages.push(message),
+      onMessage: { addListener: (fn) => { inspectMessageListener = fn; } }
+    }
+  };
+  const vmContext = dom.getInternalVMContext();
+  vm.createContext(vmContext);
+  vm.runInContext(fs.readFileSync(path.join(__dirname, "..", "src", "content.js"), "utf8"), vmContext);
+  vm.runInContext(fs.readFileSync(path.join(__dirname, "..", "src", "typography-features-inspector.js"), "utf8"), vmContext);
+
+  inspectMessageListener({ kind: "capture.inspect.toggle" });
+  window.document.getElementById("cta").dispatchEvent(new window.MouseEvent("click", { bubbles: true, cancelable: true }));
+
+  const typography = JSON.parse(sentMessages[0].payload.typographyJSON);
+  check(
+    "typographyJSON's variableFontAxes/openTypeFeatures are populated when typography-features-inspector.js is loaded alongside content.js",
+    typography.variableFontAxes.wght === 650 && typography.openTypeFeatures.liga === 1
+  );
+}
 
 runFullPageCaptureTests().then(() => {
   console.log(`=== ${failureCount === 0 ? "ALL CHECKS PASSED" : `${failureCount} CHECK(S) FAILED`} ===`);

@@ -4,7 +4,7 @@
   "private": true,
   "description": "Capture's Chromium extension -- MV3 background service worker + Inspect Mode/accessibility-audit content scripts.",
   "scripts": {
-    "test": "node tests/content.test.js && node tests/accessibility-audit.test.js"
+    "test": "node tests/content.test.js && node tests/accessibility-audit.test.js && node tests/element-accessibility-inspector.test.js && node tests/typography-features-inspector.test.js"
   },
   "devDependencies": {
     "jsdom": "^25.0.0"
