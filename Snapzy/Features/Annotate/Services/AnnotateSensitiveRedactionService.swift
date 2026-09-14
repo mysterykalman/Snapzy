@@ -19,6 +19,7 @@ enum AnnotateSensitiveDataKind: String, CaseIterable, Sendable {
   case paymentCardholderName
   case credential
   case accessToken
+  case face
 }
 
 struct AnnotateSensitiveTextMatch: Equatable, Sendable {
@@ -292,7 +293,20 @@ final class AnnotateSensitiveRedactionService {
       : CGSize(width: cgImage.width, height: cgImage.height)
     let detector = detector
 
-    return try await withCheckedThrowingContinuation { continuation in
+    async let textRegions = Self.detectTextRegions(in: cgImage, imageSize: imageSize, detector: detector)
+    async let faceRegions = Self.detectFaceRegions(in: cgImage, imageSize: imageSize)
+
+    let text = try await textRegions
+    let faces = await faceRegions
+    return AnnotateSensitiveRedactionResult(regions: mergeOverlappingRegions(text + faces))
+  }
+
+  private static func detectTextRegions(
+    in cgImage: CGImage,
+    imageSize: CGSize,
+    detector: AnnotateSensitiveDataDetector
+  ) async throws -> [AnnotateSensitiveRedactionRegion] {
+    try await withCheckedThrowingContinuation { continuation in
       DispatchQueue.global(qos: .userInitiated).async {
         let request = VNRecognizeTextRequest { request, error in
           if let error {
@@ -310,7 +324,7 @@ final class AnnotateSensitiveRedactionService {
             imageSize: imageSize,
             detector: detector
           )
-          continuation.resume(returning: AnnotateSensitiveRedactionResult(regions: regions))
+          continuation.resume(returning: regions)
         }
 
         request.recognitionLevel = .accurate
@@ -325,6 +339,38 @@ final class AnnotateSensitiveRedactionService {
         } catch {
           continuation.resume(throwing: error)
         }
+      }
+    }
+  }
+
+  /// Detects human faces so they can be proposed as redaction regions
+  /// alongside text PII. Adapted from SnapShotKit's `RedactionService`
+  /// (MIT, (c) 2026 Bheema Rajulu; see docs/REFERENCE_PROVENANCE.md) --
+  /// Snapzy's own text-PII detection above is considerably more
+  /// sophisticated than SnapShotKit's, so only the face-detection half
+  /// (genuinely missing here) was adapted in, not the whole service.
+  /// Detection failure here is non-fatal (returns no face regions
+  /// rather than failing the whole scan) since text PII is the primary,
+  /// already-working signal this feature provides.
+  private static func detectFaceRegions(in cgImage: CGImage, imageSize: CGSize) async -> [AnnotateSensitiveRedactionRegion] {
+    await withCheckedContinuation { (continuation: CheckedContinuation<[AnnotateSensitiveRedactionRegion], Never>) in
+      DispatchQueue.global(qos: .userInitiated).async {
+        let request = VNDetectFaceRectanglesRequest()
+        do {
+          try VNImageRequestHandler(cgImage: cgImage, options: [:]).perform([request])
+        } catch {
+          continuation.resume(returning: [])
+          return
+        }
+
+        let regions = (request.results ?? []).map { observation in
+          AnnotateSensitiveRedactionRegion(
+            kind: .face,
+            bounds: paddedClampedRect(imageRect(fromVisionBoundingBox: observation.boundingBox, imageSize: imageSize), imageSize: imageSize),
+            confidence: observation.confidence
+          )
+        }
+        continuation.resume(returning: regions)
       }
     }
   }
