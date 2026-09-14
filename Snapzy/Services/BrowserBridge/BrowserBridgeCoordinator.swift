@@ -9,6 +9,7 @@
 //
 
 import BrowserBridgeKit
+import Combine
 import Foundation
 
 /// Infrastructure-only for now: starts the socket server and answers the
