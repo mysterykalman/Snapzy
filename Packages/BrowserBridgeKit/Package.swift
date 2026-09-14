@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "BrowserBridgeKit",
-    platforms: [.macOS(.v15)],
+    platforms: [.macOS(.v13)],
     products: [.library(name: "BrowserBridgeKit", targets: ["BrowserBridgeKit"])],
     dependencies: [],
     targets: [
