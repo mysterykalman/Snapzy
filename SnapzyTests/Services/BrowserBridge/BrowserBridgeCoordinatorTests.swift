@@ -14,10 +14,18 @@ import XCTest
 @MainActor
 final class BrowserBridgeCoordinatorTests: XCTestCase {
 
+  /// A Unix domain socket path is limited to ~103 usable bytes
+  /// (`sockaddr_un.sun_path`, 104 bytes including the null terminator).
+  /// `NSTemporaryDirectory()` on a CI runner can already be long enough
+  /// that a full UUID-suffixed path under it overflows that limit and
+  /// `bind()` fails silently into `BridgeSocketServer.ServerError
+  /// .pathTooLong` — caught by `BrowserBridgeCoordinator.start()`, which
+  /// just logs it, leaving `isRunning` false. `/tmp` plus a short random
+  /// suffix keeps well under the limit everywhere.
   private func temporarySocketURL() -> URL {
-    URL(fileURLWithPath: NSTemporaryDirectory())
-      .appendingPathComponent("browser-bridge-coordinator-test-\(UUID().uuidString)")
-      .appendingPathComponent("socket")
+    URL(fileURLWithPath: "/tmp")
+      .appendingPathComponent("bbc-test-\(UUID().uuidString.prefix(8))")
+      .appendingPathComponent("s")
   }
 
   func testStartAnswersPingOverTheRealSocket() throws {

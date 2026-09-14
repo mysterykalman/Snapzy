@@ -46,8 +46,13 @@ final class PDFRedactorTests: XCTestCase {
     context.drawPDFPage(page)
 
     let x = Int((point.x * scale).rounded())
-    let y = Int((point.y * scale).rounded())
-    let offset = (y * width + x) * 4
+    // The context's drawing space is y-up (bottom-left origin, matching
+    // `point`), but the raw pixel buffer is stored top-down in memory —
+    // row 0 in `pixelData` is the *top* of the rendered page, not the
+    // bottom. Flip to convert a drawing-space y into a buffer row.
+    let drawingY = Int((point.y * scale).rounded())
+    let row = height - 1 - drawingY
+    let offset = (row * width + x) * 4
     return (pixelData[offset], pixelData[offset + 1], pixelData[offset + 2])
   }
 

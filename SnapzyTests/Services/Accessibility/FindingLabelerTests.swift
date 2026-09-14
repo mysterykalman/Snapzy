@@ -18,8 +18,14 @@ final class FindingLabelerTests: XCTestCase {
     XCTAssertEqual(FindingLabeler.abbreviation(for: "Onboarding"), "ONBO")
   }
 
-  func testUnknownCategoryWithNoLettersFallsBackToMisc() {
-    XCTAssertEqual(FindingLabeler.abbreviation(for: "123"), "MISC")
+  func testUnknownCategoryWithDigitsUsesTheDigitsThemselves() {
+    // The filter keeps letters *and* numbers, so an all-digit category
+    // isn't "empty" -- it falls back to its own digits, not MISC.
+    XCTAssertEqual(FindingLabeler.abbreviation(for: "123"), "123")
+  }
+
+  func testUnknownCategoryWithNoLettersOrDigitsFallsBackToMisc() {
+    XCTAssertEqual(FindingLabeler.abbreviation(for: "!!!"), "MISC")
   }
 
   func testFirstLabelForACategoryIsNumberOne() {
