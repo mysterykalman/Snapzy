@@ -1,0 +1,78 @@
+name: Dev Artifact Build
+
+# Personal-testing build pipeline: builds Capture/Snapzy on a macOS runner and
+# uploads the .app as a downloadable workflow artifact, so changes can be
+# tested without a local Xcode install. Ad-hoc signed only — not for
+# distribution. See docs/BUILD.md and docs/REFERENCE_PROVENANCE.md.
+
+on:
+  push:
+    branches: [capture/integration]
+  workflow_dispatch: {}
+
+concurrency:
+  group: dev-artifact-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.2'
+
+      - name: Build (Release, ad-hoc signed)
+        run: |
+          set -euo pipefail
+          mkdir -p build
+
+          if ! xcodebuild \
+            -project Snapzy.xcodeproj \
+            -scheme Snapzy \
+            -configuration Release \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGNING_ALLOWED=YES \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="" \
+            ONLY_ACTIVE_ARCH=NO \
+            build > build/dev-build.log 2>&1; then
+            tail -200 build/dev-build.log
+            exit 1
+          fi
+
+          tail -20 build/dev-build.log
+
+      - name: Package artifact
+        run: |
+          set -euo pipefail
+          APP_PATH="build/DerivedData/Build/Products/Release/Snapzy.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "::error::Snapzy.app not found at expected path"
+            exit 1
+          fi
+          codesign -dvv "$APP_PATH" 2>&1 || true
+          mkdir -p build/dist
+          ditto "$APP_PATH" build/dist/Capture.app
+
+      - name: Upload app artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Capture-dev-${{ github.sha }}
+          path: build/dist/Capture.app
+          retention-days: 14
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dev-build-log-${{ github.sha }}
+          path: build/dev-build.log
