@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "Capture Browser Bridge",
+  "version": "0.1.0",
+  "description": "Connects web pages to the Capture Mac app for Inspect Mode element evidence and accessibility auditing.",
+  "minimum_chrome_version": "116",
+  "permissions": ["activeTab", "scripting", "nativeMessaging"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content.js", "src/accessibility-audit.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Capture — toggle Inspect Mode"
+  },
+  "commands": {
+    "capture-full-page": {
+      "suggested_key": { "default": "Ctrl+Shift+F", "mac": "Command+Shift+F" },
+      "description": "Capture full page (auto-scroll, vertical)"
+    },
+    "capture-full-page-horizontal": {
+      "suggested_key": { "default": "Ctrl+Shift+H", "mac": "Command+Shift+H" },
+      "description": "Capture full page (auto-scroll, horizontal)"
+    },
+    "capture-full-page-reverse": {
+      "description": "Capture full page (auto-scroll, vertical, bottom to top)"
+    },
+    "capture-full-page-horizontal-reverse": {
+      "description": "Capture full page (auto-scroll, horizontal, right to left)"
+    },
+    "capture-full-page-manual-start": {
+      "description": "Start manual scrolling capture (you control each scroll/snap)"
+    },
+    "capture-full-page-manual-snap": {
+      "description": "Manual scrolling capture: snap a tile at the current scroll position"
+    },
+    "capture-full-page-manual-finish": {
+      "description": "Manual scrolling capture: finish and stitch the collected tiles"
+    },
+    "capture-accessibility-audit": {
+      "description": "Run accessibility audit (heading outline, landmarks, images, links, forms)"
+    }
+  },
+  "icons": {}
+}
