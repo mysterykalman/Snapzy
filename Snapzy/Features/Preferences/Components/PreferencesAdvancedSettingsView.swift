@@ -13,6 +13,7 @@ struct AdvancedSettingsView: View {
   @AppStorage(PreferencesKeys.diagnosticsEnabled) private var diagnosticsEnabled = true
   @AppStorage(PreferencesKeys.diagnosticsRetentionDays) private var diagnosticsRetentionDays = LogCleanupScheduler.defaultRetentionDays
   @AppStorage(PreferencesKeys.urlSchemeEnabled) private var urlSchemeEnabled = true
+  @AppStorage(PreferencesKeys.browserBridgeEnabled) private var browserBridgeEnabled = false
 
   @State private var needsConfigAccess = SnapzyConfigurationService.shared.needsUserSelectedConfigAccess
   @State private var isRestoreConfirmationPresented = false
@@ -120,6 +121,15 @@ struct AdvancedSettingsView: View {
           Toggle("", isOn: $urlSchemeEnabled)
             .labelsHidden()
         }
+
+        SettingRow(
+          icon: "puzzlepiece.extension",
+          title: L10n.PreferencesAdvanced.browserBridgeTitle,
+          description: L10n.PreferencesAdvanced.browserBridgeDescription
+        ) {
+          Toggle("", isOn: $browserBridgeEnabled)
+            .labelsHidden()
+        }
       }
 
       Section(L10n.PreferencesAdvanced.diagnosticsSection) {
@@ -172,6 +182,13 @@ struct AdvancedSettingsView: View {
     .onChange(of: diagnosticsRetentionDays) { _ in
       LogCleanupScheduler.shared.performCleanupNow()
       updateLogSize()
+    }
+    .onChange(of: browserBridgeEnabled) { isEnabled in
+      if isEnabled {
+        BrowserBridgeCoordinator.shared.start()
+      } else {
+        BrowserBridgeCoordinator.shared.stop()
+      }
     }
     .alert(
       L10n.PreferencesAdvanced.restoreDefaultsConfirmationTitle,

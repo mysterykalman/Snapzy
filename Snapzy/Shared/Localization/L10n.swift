@@ -297,6 +297,16 @@ nonisolated enum L10n {
       defaultValue: "Allow external triggers via snapzy:// URLs",
       comment: "Advanced preferences setting description"
     )
+    static let browserBridgeTitle = string(
+      "preferences-advanced.browser-bridge-title",
+      defaultValue: "Browser Bridge",
+      comment: "Advanced preferences setting title"
+    )
+    static let browserBridgeDescription = string(
+      "preferences-advanced.browser-bridge-description",
+      defaultValue: "Let the Capture browser extension connect for element inspection and accessibility audits",
+      comment: "Advanced preferences setting description"
+    )
     static let diagnosticsSection = PreferencesGeneral.diagnosticsSection
     static let diagnosticLoggingTitle = PreferencesGeneral.diagnosticLoggingTitle
     static let diagnosticLoggingDescription = PreferencesGeneral.diagnosticLoggingDescription
