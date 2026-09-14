@@ -73,4 +73,21 @@ final class BrowserBridgeCoordinator: ObservableObject {
     isRunning = false
     DiagnosticLogger.shared.log(.info, .browserBridge, "Browser bridge socket server stopped")
   }
+
+  /// Explicitly `nonisolated`: without this, the compiler synthesizes an
+  /// *isolated* deinit for this `@MainActor` `ObservableObject` (to safely
+  /// tear down the `@Published` property's Combine publisher on the main
+  /// actor), which hops through
+  /// `swift_task_deinitOnExecutorMainActorBackDeploy` at deallocation
+  /// time. That back-deployment shim crashes with heap corruption
+  /// ("pointer being freed was not allocated") on this project's CI
+  /// toolchain/OS combination when a *non-singleton* instance of this
+  /// class is deinitialized -- confirmed via a real symbolicated crash
+  /// report (see docs/REFERENCE_PROVENANCE.md) whose faulting frame is
+  /// exactly `BrowserBridgeCoordinator.__deallocating_deinit` calling
+  /// into that shim. Nothing here actually needs actor-isolated cleanup
+  /// (`server`/`isRunning`/`socketURL` are all safe to release from any
+  /// thread), so forcing a plain, non-isolated deinit sidesteps the
+  /// buggy runtime path entirely rather than working around it in tests.
+  nonisolated deinit {}
 }
