@@ -30,11 +30,29 @@ final class SnapzyDeepLinkHandlerTests: XCTestCase {
       ("snapzy://open/history", .openHistory),
       ("snapzy://show/shortcuts", .showShortcuts),
       ("snapzy://settings", .openSettings(nil)),
+      ("snapzy://measure/color", .colorLoupe),
+      ("snapzy://measure/ruler", .ruler),
     ]
 
     for (urlString, expectedAction) in cases {
       let url = try XCTUnwrap(URL(string: urlString))
       XCTAssertEqual(SnapzyDeepLinkAction(url: url), expectedAction, urlString)
+    }
+  }
+
+  func testColorLoupeAliasesParseExpectedAction() throws {
+    let aliases = ["snapzy://color-loupe", "snapzy://colour-loupe", "snapzy://eyedropper"]
+    for urlString in aliases {
+      let url = try XCTUnwrap(URL(string: urlString))
+      XCTAssertEqual(SnapzyDeepLinkAction(url: url), .colorLoupe, urlString)
+    }
+  }
+
+  func testRulerAliasesParseExpectedAction() throws {
+    let aliases = ["snapzy://ruler", "snapzy://pixel-ruler"]
+    for urlString in aliases {
+      let url = try XCTUnwrap(URL(string: urlString))
+      XCTAssertEqual(SnapzyDeepLinkAction(url: url), .ruler, urlString)
     }
   }
 
