@@ -38,6 +38,13 @@ final class AppCoordinator {
       defaults.set(true, forKey: PreferencesKeys.urlSchemeEnabled)
     }
 
+    // Browser bridge is opt-in: the Chrome extension + native messaging host
+    // do not exist yet, so there's nothing useful for an always-on socket
+    // server to do until that migration phase lands.
+    if defaults.object(forKey: PreferencesKeys.browserBridgeEnabled) == nil {
+      defaults.set(false, forKey: PreferencesKeys.browserBridgeEnabled)
+    }
+
     // History defaults
     if defaults.object(forKey: PreferencesKeys.historyEnabled) == nil {
       defaults.set(true, forKey: PreferencesKeys.historyEnabled)
@@ -69,6 +76,7 @@ final class AppCoordinator {
     LogCleanupScheduler.shared.start()
     RecordingMetadataCleanupScheduler.shared.start()
     CaptureHistoryRetentionService.shared.start()
+    BrowserBridgeCoordinator.shared.startIfEnabled()
     DiagnosticLogger.shared.log(.debug, .lifecycle, "Background schedulers started")
 
     AppStatusBarController.shared.setup(
@@ -97,6 +105,7 @@ final class AppCoordinator {
     CrashSentinel.shared.markTerminated()
     LogCleanupScheduler.shared.stop()
     RecordingMetadataCleanupScheduler.shared.stop()
+    BrowserBridgeCoordinator.shared.stop()
     SnapzyConfigurationSyncCoordinator.shared.stop()
 
     for observer in observers {

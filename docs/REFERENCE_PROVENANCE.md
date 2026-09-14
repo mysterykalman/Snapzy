@@ -23,6 +23,7 @@ reused, adapted, or materially informed by an external/donor repository.
 | Feature / subsystem | Source(s) consulted | License | Reused / Adapted / Study-only | Files materially derived | Attribution required |
 |---|---|---|---|---|---|
 | CI build artifact pipeline | Capture-Snapzy `ci.yml`, `release-publish.yml` (existing) | N/A (own repo) | Reused pattern | `.github/workflows/dev-artifact.yml` | No |
+| BrowserBridge transport (Unix-socket IPC + Chrome Native Messaging framing/protocol) | Capso-Capture `Packages/BrowserBridgeKit` | BSL 1.1 (personal use permitted) | Reused (ported near-verbatim; renamed `Capso`/bundle-ID identifiers to Snapzy equivalents) | `Packages/BrowserBridgeKit/**`, `Snapzy/Services/BrowserBridge/BrowserBridgeCoordinator.swift` | No (BSL has no attribution clause; provenance noted in file header comments) |
 
 _(Rows are added as each subsystem migration lands; see individual PR/commit messages for detail.)_
 
