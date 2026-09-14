@@ -6,23 +6,23 @@
 //  server and answers real infrastructure requests end-to-end, rather than
 //  just compiling.
 //
-//  KNOWN CI BLOCKER: all three tests here crash the CI runner's test
-//  process with a heap-corruption malloc error ("pointer being freed was
-//  not allocated") immediately on entry, before any assertion runs --
-//  identically across all three methods and across repeated automatic
-//  retries, on GitHub Actions macOS runners only. They run fine outside
-//  XCTest: `swift run --package-path native-host snapzy-bridge-verify`
-//  exercises the exact same BridgeSocketServer/BridgeSocketClient code
-//  (start/stop/restart, real send/receive round trips) end-to-end and
-//  passes all 17 checks locally. Root cause is unconfirmed without a
-//  local Xcode + debugger session (not available in this environment);
-//  the leading theory is duplicate Swift runtime metadata registration
-//  from BrowserBridgeKit being linked into both the Snapzy app target
-//  and this hosted SnapzyTests bundle (TEST_HOST loads this bundle into
-//  the already-running host app process). Skipped in
-//  .github/workflows/ci.yml's SNAPZY_CI_SKIP_TESTS pending that
-//  investigation -- do not delete these tests, they document real,
-//  intended behavior and should be re-enabled once root-caused.
+//  HISTORICAL NOTE: these tests used to crash the CI runner's hosted test
+//  process with heap corruption ("pointer being freed was not allocated")
+//  immediately on entry. Root-caused via a real symbolicated .ips crash
+//  report gathered by a temporary diagnostic CI workflow: the faulting
+//  frame was `BrowserBridgeCoordinator.__deallocating_deinit` calling into
+//  `swift_task_deinitOnExecutorMainActorBackDeploy` -- the compiler
+//  synthesizes an *isolated* deinit for a `@MainActor` `ObservableObject`
+//  class (to safely tear down its `@Published` Combine publisher on the
+//  main actor), and that back-deployment shim has a real bug on this
+//  project's CI toolchain/OS combination. It was never triggered before
+//  because every other `@MainActor` `ObservableObject` in this codebase is
+//  a `.shared` singleton that's never actually deinitialized during a test
+//  run -- these tests were the first code to create and release a
+//  transient instance. Fixed with an explicit `nonisolated deinit {}` on
+//  `BrowserBridgeCoordinator` (nothing there needs actor-isolated
+//  teardown), which skips the buggy runtime path entirely. Verified via
+//  the same diagnostic workflow before removing the CI skip.
 //
 
 import BrowserBridgeKit

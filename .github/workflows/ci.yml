@@ -36,7 +36,6 @@ jobs:
           # The following tests crash on GitHub Actions macOS runners (Swift concurrency /
           # headless CGS), so they are skipped in CI and run locally instead.
           SNAPZY_CI_SKIP_TESTS: |
-            SnapzyTests/BrowserBridgeCoordinatorTests
             SnapzyTests/GoogleDriveTests
             SnapzyTests/DatabaseManagerTests
             SnapzyTests/QuickAccessCoreTests/testQuickAccessCountdownTimer_pauseResumePreservesRemainingTime
