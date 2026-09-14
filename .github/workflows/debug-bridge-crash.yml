@@ -1,4 +1,5 @@
 name: Debug BrowserBridge Crash
+# re-run marker: verifying nonisolated-deinit fix
 
 # TEMPORARY diagnostic workflow. Runs ONLY BrowserBridgeCoordinatorTests
 # (which crash the CI runner's hosted test process -- see
