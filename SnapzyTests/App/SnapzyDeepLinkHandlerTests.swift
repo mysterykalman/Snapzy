@@ -35,6 +35,7 @@ final class SnapzyDeepLinkHandlerTests: XCTestCase {
       ("snapzy://design/overlay", .designOverlay),
       ("snapzy://inspect/results", .openInspectionResults),
       ("snapzy://capture/delayed", .delayedCapture(seconds: nil)),
+      ("snapzy://command-palette", .toggleCommandPalette),
     ]
 
     for (urlString, expectedAction) in cases {
@@ -86,6 +87,14 @@ final class SnapzyDeepLinkHandlerTests: XCTestCase {
   func testDelayedCaptureParsesAnExplicitSecondsQueryParameter() throws {
     let url = try XCTUnwrap(URL(string: "snapzy://capture/delayed?seconds=10"))
     XCTAssertEqual(SnapzyDeepLinkAction(url: url), .delayedCapture(seconds: 10))
+  }
+
+  func testCommandPaletteAliasesParseExpectedAction() throws {
+    let aliases = ["snapzy://commands", "snapzy://show/command-palette"]
+    for urlString in aliases {
+      let url = try XCTUnwrap(URL(string: urlString))
+      XCTAssertEqual(SnapzyDeepLinkAction(url: url), .toggleCommandPalette, urlString)
+    }
   }
 
   func testRepeatAreaAliasesParseExpectedAction() throws {

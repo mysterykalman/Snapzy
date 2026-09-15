@@ -165,7 +165,7 @@ Per explicit instruction: functional workflows over decorative polish, C items a
 3. **Ecommerce Swift mappers** for the JS functions already tested but never wired (`shopifyThemeIntelligence` first — selector-free, easiest).
 4. **Delayed/Timed Capture** — self-contained, no dependencies, real spec-named gap.
 5. **Option-click capture-without-shadow** — small, well-scoped, reuses existing `WindowShadowPreference`.
-6. **Capture blackout list** — real privacy feature, self-contained.
+6. **Capture blackout list** -- investigated and deliberately deferred: accurate enforcement needs to know which app was actually captured, but `CaptureContext` (the type that already resolves `appName` at capture time) is never threaded into `PostCaptureActionHandler`/`CaptureHistoryStore.addCapture` today. By the time those run, the frontmost app has often already changed back to Snapzy itself, so checking "frontmost app" there would silently misidentify almost every capture. Doing this correctly means adding a `sourceAppName` parameter through every `handleScreenshotCapture(s)`/`addCapture` call site across the whole capture pipeline (fullscreen/area/window/scrolling/recording) -- a real, wider change that deserves its own careful, individually-verified pass rather than a rushed one bundled into this session's remaining budget. Left for a follow-up.
 7. **Command Palette** — self-contained, high value per spec's own framing as the toolbar "release valve."
 8. Continue down the list as time/session budget allows; Capture Tray/Assembly, Universal Snap Engine, and Bookmarks Bar Privacy are the largest remaining C items and will be tackled as scoped MVPs, documented honestly per item if reduced in scope.
 
