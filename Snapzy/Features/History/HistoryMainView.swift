@@ -6,6 +6,7 @@
 //
 
 import AppKit
+import ImageIO
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -38,7 +39,8 @@ struct HistoryMainView: View {
           onClearSelection: { selectedIds.removeAll() },
           onDeleteSelection: deleteSelectedRecords,
           onExportSelectionAsPDF: { exportSelectedRecords(as: .pdf) },
-          onExportSelectionAsPowerPoint: { exportSelectedRecords(as: .pptx) }
+          onExportSelectionAsPowerPoint: { exportSelectedRecords(as: .pptx) },
+          onExportSelectionAsContactSheet: exportSelectedRecordsAsContactSheet
         )
 
         HistoryFilterBar(
@@ -135,6 +137,44 @@ struct HistoryMainView: View {
       }
     } catch {
       DiagnosticLogger.shared.logError(.history, error, "History selection export failed", context: ["format": format.defaultFileName])
+    }
+  }
+
+  /// Composes every selected screenshot/GIF into one contact-sheet image
+  /// (grid layout, filename labels) via `ContactSheetGenerator` -- the
+  /// first UI caller of that generator, which was previously fully
+  /// implemented and tested but unreachable from anywhere in the app.
+  private func exportSelectedRecordsAsContactSheet() {
+    let labeledImages: [(image: CGImage, label: String)] = selectedRecords.compactMap { record in
+      guard record.captureType != .video,
+        let image = NSImage(contentsOfFile: record.filePath)?.cgImage(forProposedRect: nil, context: nil, hints: nil)
+      else { return nil }
+      return (image, record.fileName)
+    }
+    guard !labeledImages.isEmpty else { return }
+
+    let columns = max(1, Int(Double(labeledImages.count).squareRoot().rounded(.up)))
+    guard
+      let contactSheet = ContactSheetGenerator.generate(
+        images: labeledImages.map(\.image),
+        layout: .grid(columns: columns),
+        labels: labeledImages.map(\.label)
+      )
+    else { return }
+
+    let panel = NSSavePanel()
+    panel.allowedContentTypes = [.png]
+    panel.nameFieldStringValue = "Contact Sheet.png"
+    panel.canCreateDirectories = true
+
+    guard panel.runModal() == .OK, let url = panel.url else { return }
+
+    guard
+      let destination = CGImageDestinationCreateWithURL(url as CFURL, UTType.png.identifier as CFString, 1, nil)
+    else { return }
+    CGImageDestinationAddImage(destination, contactSheet, nil)
+    if !CGImageDestinationFinalize(destination) {
+      DiagnosticLogger.shared.log(.warning, .history, "Contact sheet export failed to finalize PNG")
     }
   }
 }

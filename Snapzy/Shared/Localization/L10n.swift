@@ -9240,6 +9240,11 @@ nonisolated enum L10n {
       defaultValue: "Export as PowerPoint",
       comment: "Menu item: export selected history captures as a PowerPoint presentation"
     )
+    static let exportSelectionAsContactSheet = string(
+      "preferences-history.export-selection-as-contact-sheet",
+      defaultValue: "Export as Contact Sheet",
+      comment: "Menu item: export selected history captures as one combined contact-sheet image"
+    )
     static let deleteSelectedAlertTitle = string(
       "preferences-history.delete-selected-alert-title",
       defaultValue: "Delete Selected Captures?",

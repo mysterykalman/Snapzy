@@ -16,6 +16,7 @@ struct HistoryToolbar: View {
   let onDeleteSelection: () -> Void
   let onExportSelectionAsPDF: () -> Void
   let onExportSelectionAsPowerPoint: () -> Void
+  let onExportSelectionAsContactSheet: () -> Void
 
   @AppStorage(PreferencesKeys.historyBackgroundStyle) private var backgroundStyle: HistoryBackgroundStyle = .defaultStyle
   @Environment(\.colorScheme) private var colorScheme
@@ -88,6 +89,7 @@ struct HistoryToolbar: View {
       Menu {
         Button(L10n.PreferencesHistory.exportSelectionAsPDF, action: onExportSelectionAsPDF)
         Button(L10n.PreferencesHistory.exportSelectionAsPowerPoint, action: onExportSelectionAsPowerPoint)
+        Button(L10n.PreferencesHistory.exportSelectionAsContactSheet, action: onExportSelectionAsContactSheet)
       } label: {
         Label(L10n.PreferencesHistory.exportSelection, systemImage: "square.and.arrow.up")
           .font(.system(size: 11, weight: .semibold))
