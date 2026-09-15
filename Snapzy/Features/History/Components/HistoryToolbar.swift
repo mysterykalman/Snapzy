@@ -14,6 +14,8 @@ struct HistoryToolbar: View {
   let onSelectAll: () -> Void
   let onClearSelection: () -> Void
   let onDeleteSelection: () -> Void
+  let onExportSelectionAsPDF: () -> Void
+  let onExportSelectionAsPowerPoint: () -> Void
 
   @AppStorage(PreferencesKeys.historyBackgroundStyle) private var backgroundStyle: HistoryBackgroundStyle = .defaultStyle
   @Environment(\.colorScheme) private var colorScheme
@@ -82,6 +84,19 @@ struct HistoryToolbar: View {
         systemName: "xmark.circle",
         action: onClearSelection
       )
+
+      Menu {
+        Button(L10n.PreferencesHistory.exportSelectionAsPDF, action: onExportSelectionAsPDF)
+        Button(L10n.PreferencesHistory.exportSelectionAsPowerPoint, action: onExportSelectionAsPowerPoint)
+      } label: {
+        Label(L10n.PreferencesHistory.exportSelection, systemImage: "square.and.arrow.up")
+          .font(.system(size: 11, weight: .semibold))
+          .lineLimit(1)
+          .fixedSize(horizontal: true, vertical: false)
+      }
+      .menuStyle(.borderlessButton)
+      .fixedSize()
+      .foregroundColor(.primary.opacity(0.82))
 
       selectionButton(
         title: L10n.Common.deleteAction,

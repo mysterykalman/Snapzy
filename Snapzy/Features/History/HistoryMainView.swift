@@ -5,7 +5,9 @@
 //  Root SwiftUI view for the capture history browser
 //
 
+import AppKit
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct HistoryMainView: View {
   @ObservedObject private var themeManager = ThemeManager.shared
@@ -34,7 +36,9 @@ struct HistoryMainView: View {
           canSelectAll: selectedRecords.count < filteredRecords.count,
           onSelectAll: selectAllFilteredRecords,
           onClearSelection: { selectedIds.removeAll() },
-          onDeleteSelection: deleteSelectedRecords
+          onDeleteSelection: deleteSelectedRecords,
+          onExportSelectionAsPDF: { exportSelectedRecords(as: .pdf) },
+          onExportSelectionAsPowerPoint: { exportSelectedRecords(as: .pptx) }
         )
 
         HistoryFilterBar(
@@ -104,6 +108,53 @@ struct HistoryMainView: View {
     )
     guard deletedCount > 0 else { return }
     selectedIds.removeAll()
+  }
+
+  /// Loads each selected screenshot/GIF record's full-resolution image
+  /// (skipping video records, which have no single still frame to
+  /// export) and writes them as one PDF or PowerPoint deck, one
+  /// page/slide per capture in selection order.
+  private func exportSelectedRecords(as format: HistoryExportFormat) {
+    let images: [CGImage] = selectedRecords.compactMap { record in
+      guard record.captureType != .video else { return nil }
+      return NSImage(contentsOfFile: record.filePath)?.cgImage(forProposedRect: nil, context: nil, hints: nil)
+    }
+    guard !images.isEmpty else { return }
+
+    let panel = NSSavePanel()
+    panel.allowedContentTypes = [format.contentType]
+    panel.nameFieldStringValue = format.defaultFileName
+    panel.canCreateDirectories = true
+
+    guard panel.runModal() == .OK, let url = panel.url else { return }
+
+    do {
+      switch format {
+      case .pdf: try PDFExport.write(images: images, to: url)
+      case .pptx: try PPTXExport.write(images: images, to: url)
+      }
+    } catch {
+      DiagnosticLogger.shared.logError(.history, error, "History selection export failed", context: ["format": format.defaultFileName])
+    }
+  }
+}
+
+private enum HistoryExportFormat {
+  case pdf
+  case pptx
+
+  var contentType: UTType {
+    switch self {
+    case .pdf: return .pdf
+    case .pptx: return UTType(filenameExtension: "pptx") ?? .data
+    }
+  }
+
+  var defaultFileName: String {
+    switch self {
+    case .pdf: return "Captures.pdf"
+    case .pptx: return "Captures.pptx"
+    }
   }
 }
 

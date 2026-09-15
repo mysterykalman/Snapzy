@@ -9225,6 +9225,21 @@ nonisolated enum L10n {
       defaultValue: "Clear",
       comment: "Button title for clearing selected history captures"
     )
+    static let exportSelection = string(
+      "preferences-history.export-selection",
+      defaultValue: "Export",
+      comment: "Menu button title for exporting selected history captures"
+    )
+    static let exportSelectionAsPDF = string(
+      "preferences-history.export-selection-as-pdf",
+      defaultValue: "Export as PDF",
+      comment: "Menu item: export selected history captures as a PDF"
+    )
+    static let exportSelectionAsPowerPoint = string(
+      "preferences-history.export-selection-as-powerpoint",
+      defaultValue: "Export as PowerPoint",
+      comment: "Menu item: export selected history captures as a PowerPoint presentation"
+    )
     static let deleteSelectedAlertTitle = string(
       "preferences-history.delete-selected-alert-title",
       defaultValue: "Delete Selected Captures?",
