@@ -100,6 +100,8 @@ struct SnapzyDeepLinkHandler {
       PixelMeterOverlay.present(mode: .colorPicker) { _ in }
     case .ruler:
       PixelMeterOverlay.present(mode: .ruler) { _ in }
+    case .designOverlay:
+      FigmaOverlayManager.shared.toggle()
     }
   }
 }
@@ -126,6 +128,7 @@ enum SnapzyDeepLinkAction: Equatable {
   case openSettings(PreferencesTab?)
   case colorLoupe
   case ruler
+  case designOverlay
 
   init?(url: URL) {
     guard url.scheme?.lowercased() == "snapzy" else { return nil }
@@ -180,6 +183,8 @@ enum SnapzyDeepLinkAction: Equatable {
       self = .colorLoupe
     case "measure/ruler", "ruler", "pixel-ruler":
       self = .ruler
+    case "design/overlay", "figma-overlay", "design-overlay":
+      self = .designOverlay
     case let value where value.hasPrefix("settings/"):
       self = .openSettings(Self.preferencesTab(from: components, pathParts: pathParts))
     case let value where value.hasPrefix("preferences/"):
@@ -212,6 +217,7 @@ enum SnapzyDeepLinkAction: Equatable {
     case .openSettings(let tab): return "openSettings(\(String(describing: tab)))"
     case .colorLoupe: return "colorLoupe"
     case .ruler: return "ruler"
+    case .designOverlay: return "designOverlay"
     }
   }
 

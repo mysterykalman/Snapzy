@@ -32,6 +32,7 @@ final class SnapzyDeepLinkHandlerTests: XCTestCase {
       ("snapzy://settings", .openSettings(nil)),
       ("snapzy://measure/color", .colorLoupe),
       ("snapzy://measure/ruler", .ruler),
+      ("snapzy://design/overlay", .designOverlay),
     ]
 
     for (urlString, expectedAction) in cases {
@@ -53,6 +54,14 @@ final class SnapzyDeepLinkHandlerTests: XCTestCase {
     for urlString in aliases {
       let url = try XCTUnwrap(URL(string: urlString))
       XCTAssertEqual(SnapzyDeepLinkAction(url: url), .ruler, urlString)
+    }
+  }
+
+  func testDesignOverlayAliasesParseExpectedAction() throws {
+    let aliases = ["snapzy://figma-overlay", "snapzy://design-overlay"]
+    for urlString in aliases {
+      let url = try XCTUnwrap(URL(string: urlString))
+      XCTAssertEqual(SnapzyDeepLinkAction(url: url), .designOverlay, urlString)
     }
   }
 
