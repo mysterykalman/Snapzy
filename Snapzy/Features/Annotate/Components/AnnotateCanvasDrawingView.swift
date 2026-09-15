@@ -663,7 +663,7 @@ final class DrawingCanvasNSView: NSView {
     in coordinateSpace: ResizeHandleCoordinateSpace
   ) -> [(ResizeHandle, CGRect)] {
     switch annotation.type {
-    case .line(let start, let end):
+    case .line(let start, let end), .measurement(let start, let end):
       let startPoint = coordinateSpace == .canvas ? imageToDisplay(start) : start
       let endPoint = coordinateSpace == .canvas ? imageToDisplay(end) : end
       return [
@@ -1210,6 +1210,16 @@ final class DrawingCanvasNSView: NSView {
         let updatedStart = isStart ? imagePoint : start
         let updatedEnd = isStart ? end : imagePoint
         item.type = .line(start: updatedStart, end: updatedEnd)
+        item.bounds = CGRect(
+          x: min(updatedStart.x, updatedEnd.x),
+          y: min(updatedStart.y, updatedEnd.y),
+          width: abs(updatedEnd.x - updatedStart.x),
+          height: abs(updatedEnd.y - updatedStart.y)
+        ).standardized
+      case .measurement(let start, let end):
+        let updatedStart = isStart ? imagePoint : start
+        let updatedEnd = isStart ? end : imagePoint
+        item.type = .measurement(start: updatedStart, end: updatedEnd)
         item.bounds = CGRect(
           x: min(updatedStart.x, updatedEnd.x),
           y: min(updatedStart.y, updatedEnd.y),
@@ -1877,7 +1887,7 @@ final class DrawingCanvasNSView: NSView {
 
   private func drawSelectionAffordance(for annotation: AnnotationItem, in context: CGContext, showsHandles: Bool) {
     switch annotation.type {
-    case .line, .arrow:
+    case .line, .measurement, .arrow:
       // Endpoint-editable items: a single selection is indicated purely by its
       // draggable endpoint grips (drawn below), so nothing is painted over the
       // body. Multi-selection falls back to a bounding box so the item still

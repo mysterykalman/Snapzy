@@ -771,6 +771,11 @@ final class AnnotateExporter {
         start: CGPoint(x: start.x - cropOrigin.x + imageX, y: start.y - cropOrigin.y + imageY),
         end: CGPoint(x: end.x - cropOrigin.x + imageX, y: end.y - cropOrigin.y + imageY)
       )
+    case .measurement(let start, let end):
+      result.type = .measurement(
+        start: CGPoint(x: start.x - cropOrigin.x + imageX, y: start.y - cropOrigin.y + imageY),
+        end: CGPoint(x: end.x - cropOrigin.x + imageX, y: end.y - cropOrigin.y + imageY)
+      )
     case .path(let points):
       result.type = .path(points.map {
         CGPoint(x: $0.x - cropOrigin.x + imageX, y: $0.y - cropOrigin.y + imageY)
@@ -814,6 +819,11 @@ final class AnnotateExporter {
         start: CGPoint(x: start.x - cropOrigin.x + padding, y: start.y - cropOrigin.y + padding),
         end: CGPoint(x: end.x - cropOrigin.x + padding, y: end.y - cropOrigin.y + padding)
       )
+    case .measurement(let start, let end):
+      result.type = .measurement(
+        start: CGPoint(x: start.x - cropOrigin.x + padding, y: start.y - cropOrigin.y + padding),
+        end: CGPoint(x: end.x - cropOrigin.x + padding, y: end.y - cropOrigin.y + padding)
+      )
     case .path(let points):
       result.type = .path(points.map {
         CGPoint(x: $0.x - cropOrigin.x + padding, y: $0.y - cropOrigin.y + padding)
@@ -840,6 +850,11 @@ final class AnnotateExporter {
       result.type = .arrow(geometry.translatedBy(dx: padding, dy: padding))
     case .line(let start, let end):
       result.type = .line(
+        start: CGPoint(x: start.x + padding, y: start.y + padding),
+        end: CGPoint(x: end.x + padding, y: end.y + padding)
+      )
+    case .measurement(let start, let end):
+      result.type = .measurement(
         start: CGPoint(x: start.x + padding, y: start.y + padding),
         end: CGPoint(x: end.x + padding, y: end.y + padding)
       )

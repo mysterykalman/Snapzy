@@ -576,6 +576,8 @@ private struct DragFallbackSignature: Equatable {
       return "arrow|\(pointSignature(geometry.start))|\(pointSignature(geometry.end))|\(geometry.style.rawValue)|\(controlPoint)"
     case .line(let start, let end):
       return "line|\(pointSignature(start))|\(pointSignature(end))"
+    case .measurement(let start, let end):
+      return "measurement|\(pointSignature(start))|\(pointSignature(end))"
     case .text(let value):
       return "text|\(value)"
     case .highlight(let points):

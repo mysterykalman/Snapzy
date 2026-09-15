@@ -69,6 +69,12 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 - Double-sided heads: `ArrowEndpointStyle` `startHead` / `endHead` (commit `b299bad`); applies to `.classic` — tapered/outlined bake the head into the body.
 - Figma-style endpoint dragging for arrows + lines (commit `22766cb`).
 
+## Measurement (Ruler)
+
+- `AnnotationType.measurement(start:end:)` -- geometrically identical to Line (same `.lineStart`/`.lineEnd` endpoint-drag handles, Shift-to-snap-to-angle, crop/rotate/translate offsetting), but rendered as a ruler: perpendicular ticks at each end plus a pill-shaped distance label offset to one side so it never overlaps the line.
+- Distance is reported in canvas points ("N px"), the same coordinate unit annotation bounds are already authored in -- not a display-density-calibrated physical measurement. This is a deliberate simplification: a relative on-canvas ruler, consistent with how every other annotation on the canvas is already positioned and sized.
+- Tool shortcut `U`; supports stroke color/width/line-style like Line.
+
 ## Blur / Pixelate
 
 - `BlurType` — 8 effects: pixelated, gaussian, hexagonal, crystallized, pointillism, halftone, tape, washi.

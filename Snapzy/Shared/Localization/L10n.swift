@@ -8276,6 +8276,11 @@ nonisolated enum L10n {
       defaultValue: "Line",
       comment: "Annotation tool display name"
     )
+    static let measurementTool = string(
+      "annotate.tool.measurement",
+      defaultValue: "Measure",
+      comment: "Annotation tool display name"
+    )
     static let textTool = string(
       "annotate.tool.text",
       defaultValue: "Text",

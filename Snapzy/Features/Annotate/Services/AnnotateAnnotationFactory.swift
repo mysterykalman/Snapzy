@@ -104,6 +104,9 @@ enum AnnotationFactory {
     case .line:
       type = .line(start: start, end: end)
 
+    case .measurement:
+      type = .measurement(start: start, end: end)
+
     case .pencil:
       guard path.count > 1 else { return nil }
       type = .path(path)

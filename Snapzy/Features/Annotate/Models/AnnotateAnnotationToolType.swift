@@ -16,6 +16,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
   case oval
   case arrow
   case line
+  case measurement
   case text
   case highlighter
   case blur
@@ -32,7 +33,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
   /// Shared by the full Annotate window and inline area-annotate overlay so the
   /// two surfaces stay in sync when tools are added.
   static let drawableTools: [AnnotationToolType] = [
-    .rectangle, .filledRectangle, .oval, .arrow, .line, .text, .highlighter,
+    .rectangle, .filledRectangle, .oval, .arrow, .line, .measurement, .text, .highlighter,
     .blur, .spotlight, .counter, .stamp, .watermark, .pencil
   ]
 
@@ -57,6 +58,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     case .oval: return "circle"
     case .arrow: return "arrow.up.right"
     case .line: return "line.diagonal"
+    case .measurement: return "ruler"
     case .text: return "character.textbox"
     case .highlighter: return "highlighter"
     case .blur: return "eye.slash"
@@ -79,6 +81,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     case .oval: return "o"
     case .arrow: return "a"
     case .line: return "l"
+    case .measurement: return "u"
     case .text: return "t"
     case .highlighter: return "h"
     case .blur: return "b"
@@ -101,6 +104,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     case .oval: return L10n.Annotate.ovalTool
     case .arrow: return L10n.Annotate.arrowTool
     case .line: return L10n.Annotate.lineTool
+    case .measurement: return L10n.Annotate.measurementTool
     case .text: return L10n.Annotate.textTool
     case .highlighter: return L10n.Annotate.highlighterTool
     case .blur: return L10n.Annotate.blurTool
@@ -115,7 +119,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
 
   var supportsQuickPropertiesBar: Bool {
     switch self {
-    case .rectangle, .filledRectangle, .oval, .arrow, .line, .text, .highlighter, .blur, .spotlight, .counter, .stamp, .watermark, .pencil:
+    case .rectangle, .filledRectangle, .oval, .arrow, .line, .measurement, .text, .highlighter, .blur, .spotlight, .counter, .stamp, .watermark, .pencil:
       return true
     case .selection, .crop, .mockup:
       return false
@@ -127,7 +131,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
   /// flow, and freehand tools keep their existing path-count behavior.
   var requiresDragToCreateAnnotation: Bool {
     switch self {
-    case .rectangle, .filledRectangle, .oval, .arrow, .line, .blur, .spotlight, .watermark:
+    case .rectangle, .filledRectangle, .oval, .arrow, .line, .measurement, .blur, .spotlight, .watermark:
       return true
     case .selection, .crop, .text, .highlighter, .counter, .stamp, .pencil, .mockup:
       return false
@@ -136,7 +140,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
 
   var supportsQuickStrokeColor: Bool {
     switch self {
-    case .rectangle, .filledRectangle, .oval, .arrow, .line, .text, .highlighter, .counter, .watermark, .pencil:
+    case .rectangle, .filledRectangle, .oval, .arrow, .line, .measurement, .text, .highlighter, .counter, .watermark, .pencil:
       return true
     case .selection, .crop, .blur, .spotlight, .stamp, .mockup:
       return false
@@ -149,7 +153,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
 
   var supportsQuickStrokeWidth: Bool {
     switch self {
-    case .rectangle, .filledRectangle, .oval, .arrow, .line, .highlighter, .blur, .counter, .stamp, .pencil:
+    case .rectangle, .filledRectangle, .oval, .arrow, .line, .measurement, .highlighter, .blur, .counter, .stamp, .pencil:
       return true
     case .selection, .crop, .text, .watermark, .spotlight, .mockup:
       return false
@@ -160,14 +164,14 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     switch self {
     case .rectangle, .filledRectangle, .text, .spotlight:
       return true
-    case .selection, .crop, .oval, .arrow, .line, .highlighter, .blur, .counter, .stamp, .watermark, .pencil, .mockup:
+    case .selection, .crop, .oval, .arrow, .line, .measurement, .highlighter, .blur, .counter, .stamp, .watermark, .pencil, .mockup:
       return false
     }
   }
 
   var supportsQuickLineStyle: Bool {
     switch self {
-    case .rectangle, .filledRectangle, .oval, .arrow, .line:
+    case .rectangle, .filledRectangle, .oval, .arrow, .line, .measurement:
       return true
     case .selection, .crop, .text, .highlighter, .blur, .counter, .stamp, .watermark, .pencil, .spotlight, .mockup:
       return false

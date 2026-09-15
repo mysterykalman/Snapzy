@@ -2770,6 +2770,11 @@ final class AnnotateState: ObservableObject {
       let newEnd = AnnotateImageRotation.rotatePoint(end, oldSize: oldSize, clockwise: clockwise)
       rotated.type = .line(start: newStart, end: newEnd)
 
+    case .measurement(let start, let end):
+      let newStart = AnnotateImageRotation.rotatePoint(start, oldSize: oldSize, clockwise: clockwise)
+      let newEnd = AnnotateImageRotation.rotatePoint(end, oldSize: oldSize, clockwise: clockwise)
+      rotated.type = .measurement(start: newStart, end: newEnd)
+
     case .path(let points):
       rotated.type = .path(points.map {
         AnnotateImageRotation.rotatePoint($0, oldSize: oldSize, clockwise: clockwise)
@@ -3632,13 +3637,25 @@ final class AnnotateState: ObservableObject {
     }
   }
 
+  /// Also handles Measurement, which shares Line's start/end geometry exactly.
   func updateLineEndpoint(id: UUID, start newStart: CGPoint? = nil, end newEnd: CGPoint? = nil) {
-    guard let index = annotations.firstIndex(where: { $0.id == id }),
-          case .line(let start, let end) = annotations[index].type else { return }
+    guard let index = annotations.firstIndex(where: { $0.id == id }) else { return }
 
-    let updatedStart = newStart ?? start
-    let updatedEnd = newEnd ?? end
-    annotations[index].type = .line(start: updatedStart, end: updatedEnd)
+    let updatedStart: CGPoint
+    let updatedEnd: CGPoint
+    switch annotations[index].type {
+    case .line(let start, let end):
+      updatedStart = newStart ?? start
+      updatedEnd = newEnd ?? end
+      annotations[index].type = .line(start: updatedStart, end: updatedEnd)
+    case .measurement(let start, let end):
+      updatedStart = newStart ?? start
+      updatedEnd = newEnd ?? end
+      annotations[index].type = .measurement(start: updatedStart, end: updatedEnd)
+    default:
+      return
+    }
+
     annotations[index].bounds = CGRect(
       x: min(updatedStart.x, updatedEnd.x),
       y: min(updatedStart.y, updatedEnd.y),

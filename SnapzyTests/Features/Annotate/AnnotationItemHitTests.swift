@@ -53,6 +53,16 @@ final class AnnotationItemHitTests: XCTestCase {
     XCTAssertFalse(item.containsPoint(CGPoint(x: 50, y: 70)))
   }
 
+  func testMeasurement_containsPoint_nearSegment() {
+    let item = AnnotationItem(type: .measurement(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 100)), bounds: CGRect(x: 0, y: 0, width: 100, height: 100), properties: AnnotationProperties(strokeWidth: 2))
+    XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 52)))
+  }
+
+  func testMeasurement_containsPoint_outsideTolerance() {
+    let item = AnnotationItem(type: .measurement(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 100)), bounds: CGRect(x: 0, y: 0, width: 100, height: 100), properties: AnnotationProperties(strokeWidth: 2))
+    XCTAssertFalse(item.containsPoint(CGPoint(x: 50, y: 70)))
+  }
+
   func testPath_containsPoint_nearPolyline() {
     let item = AnnotationItem(type: .path([CGPoint(x: 0, y: 0), CGPoint(x: 50, y: 50), CGPoint(x: 100, y: 0)]), bounds: CGRect(x: 0, y: 0, width: 100, height: 50), properties: AnnotationProperties(strokeWidth: 4))
     XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 48)))

@@ -1264,6 +1264,11 @@ extension AnnotationItem {
         start: CGPoint(x: start.x + dx, y: start.y + dy),
         end: CGPoint(x: end.x + dx, y: end.y + dy)
       )
+    case .measurement(let start, let end):
+      translated.type = .measurement(
+        start: CGPoint(x: start.x + dx, y: start.y + dy),
+        end: CGPoint(x: end.x + dx, y: end.y + dy)
+      )
     case .path(let points):
       translated.type = .path(points.map { CGPoint(x: $0.x + dx, y: $0.y + dy) })
     case .highlight(let points):
@@ -1316,6 +1321,11 @@ extension AnnotationItem {
       copy.bounds = updated.bounds()
     case .line(let start, let end):
       copy.type = .line(
+        start: Self.remapPoint(start, from: oldBounds, to: normalizedBounds),
+        end: Self.remapPoint(end, from: oldBounds, to: normalizedBounds)
+      )
+    case .measurement(let start, let end):
+      copy.type = .measurement(
         start: Self.remapPoint(start, from: oldBounds, to: normalizedBounds),
         end: Self.remapPoint(end, from: oldBounds, to: normalizedBounds)
       )
@@ -1402,6 +1412,7 @@ nonisolated enum AnnotationType: Equatable {
   case oval
   case arrow(ArrowGeometry)
   case line(start: CGPoint, end: CGPoint)
+  case measurement(start: CGPoint, end: CGPoint)
   case text(String)
   case highlight([CGPoint])
   case blur(BlurType)
@@ -1420,6 +1431,7 @@ nonisolated enum AnnotationType: Equatable {
     case .oval: .oval
     case .arrow: .arrow
     case .line: .line
+    case .measurement: .measurement
     case .text: .text
     case .highlight: .highlighter
     case .blur: .blur
@@ -1592,7 +1604,7 @@ extension AnnotationItem {
     switch type {
     case .arrow(let geometry):
       return geometry.bounds()
-    case .line(let start, let end):
+    case .line(let start, let end), .measurement(let start, let end):
       return Self.normalizedBounds(Self.bounds(containing: [start, end]) ?? bounds)
     case .path(let points), .highlight(let points):
       return Self.normalizedBounds(Self.bounds(containing: points) ?? bounds)
@@ -1663,7 +1675,7 @@ extension AnnotationItem {
       let arrowTolerance = baseTolerance + maxArrowWidth / 2
       return distanceToPolyline(point, points: geometry.sampledPoints()) <= arrowTolerance
 
-    case .line(let start, let end):
+    case .line(let start, let end), .measurement(let start, let end):
       return distanceToSegment(point, from: start, to: end) <= tolerance
 
     case .path(let points), .highlight(let points):

@@ -416,6 +416,25 @@ final class AnnotateSelectionEditingTests: XCTestCase {
     XCTAssertEqual(updated.bounds, CGRect(x: 10, y: 10, width: 50, height: 10))
   }
 
+  @MainActor
+  func testUpdateLineEndpointAlsoUpdatesMeasurementStartAndEndIndependently() throws {
+    let state = makeAnnotateState()
+    let measurement = AnnotationItem(
+      type: .measurement(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 40, y: 40)),
+      bounds: CGRect(x: 0, y: 0, width: 40, height: 40),
+      properties: AnnotationProperties()
+    )
+    state.annotations = [measurement]
+
+    state.updateLineEndpoint(id: measurement.id, start: CGPoint(x: 10, y: 10))
+    let updated = try XCTUnwrap(state.annotations.first)
+    guard case .measurement(let start, let end) = updated.type else {
+      return XCTFail("Expected measurement annotation")
+    }
+    XCTAssertEqual(start, CGPoint(x: 10, y: 10))
+    XCTAssertEqual(end, CGPoint(x: 40, y: 40))
+  }
+
   // MARK: - Arrow style switching
 
   @MainActor

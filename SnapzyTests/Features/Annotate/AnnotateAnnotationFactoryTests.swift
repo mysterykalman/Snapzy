@@ -102,6 +102,25 @@ final class AnnotateAnnotationFactoryTests: XCTestCase {
     XCTAssertEqual(annotation.bounds, CGRect(x: 12, y: 18, width: 36, height: 34))
   }
 
+  func testCreateMeasurementPreservesEndpoints() throws {
+    let start = CGPoint(x: 12, y: 18)
+    let end = CGPoint(x: 48, y: 52)
+    let annotation = try XCTUnwrap(AnnotationFactory.createAnnotation(
+      tool: .measurement,
+      from: start,
+      to: end,
+      path: [],
+      context: makeContext()
+    ))
+
+    guard case .measurement(let measurementStart, let measurementEnd) = annotation.type else {
+      return XCTFail("Expected measurement annotation, got \(annotation.type)")
+    }
+    XCTAssertEqual(measurementStart, start)
+    XCTAssertEqual(measurementEnd, end)
+    XCTAssertEqual(annotation.bounds, CGRect(x: 12, y: 18, width: 36, height: 34))
+  }
+
   func testCreatePencilPreservesPathPointsInOrder() throws {
     let path = [
       CGPoint(x: 10, y: 10),

@@ -92,6 +92,9 @@ nonisolated struct AnnotationRenderer {
       context.addLine(to: end)
       strokeCurrentPath(lineStyle: annotation.properties.lineStyle, strokeWidth: annotation.properties.strokeWidth)
 
+    case .measurement(let start, let end):
+      drawMeasurement(start: start, end: end, properties: annotation.properties)
+
     case .path(let points), .highlight(let points):
       drawPath(
         points: points,
@@ -192,6 +195,14 @@ nonisolated struct AnnotationRenderer {
       context.move(to: start)
       context.addLine(to: currentPoint)
       strokeCurrentPath(lineStyle: lineStyle, strokeWidth: strokeWidth)
+
+    case .measurement:
+      let currentPoint = currentPath.last ?? start
+      drawMeasurement(
+        start: start,
+        end: currentPoint,
+        properties: AnnotationProperties(strokeColor: strokeColor, fillColor: .clear, strokeWidth: strokeWidth, lineStyle: lineStyle)
+      )
 
     case .arrow:
       let currentPoint = currentPath.last ?? start
@@ -480,6 +491,71 @@ nonisolated struct AnnotationRenderer {
       height: imageSize.height
     )
     symbolImage.draw(in: imageRect)
+  }
+
+  /// Draws a ruler-style line: end ticks perpendicular to the line, plus a
+  /// pill-shaped distance label offset to one side so it never overlaps the
+  /// line itself. Distance is reported in canvas points (the same unit
+  /// everything else on the canvas is authored in), not native image pixels.
+  private func drawMeasurement(start: CGPoint, end: CGPoint, properties: AnnotationProperties) {
+    context.move(to: start)
+    context.addLine(to: end)
+    strokeCurrentPath(lineStyle: properties.lineStyle, strokeWidth: properties.strokeWidth)
+
+    let dx = end.x - start.x
+    let dy = end.y - start.y
+    let length = hypot(dx, dy)
+    guard length > 0.0001 else { return }
+
+    let ux = dx / length
+    let uy = dy / length
+    // Perpendicular unit vector, used for both the end ticks and the label offset.
+    let px = -uy
+    let py = ux
+
+    let tickHalfLength = max(6, properties.strokeWidth * 2.5)
+    drawMeasurementTick(at: start, perpendicular: CGPoint(x: px, y: py), halfLength: tickHalfLength)
+    drawMeasurementTick(at: end, perpendicular: CGPoint(x: px, y: py), halfLength: tickHalfLength)
+
+    let midpoint = CGPoint(x: (start.x + end.x) / 2, y: (start.y + end.y) / 2)
+    let labelOffset: CGFloat = 14
+    let labelCenter = CGPoint(x: midpoint.x + px * labelOffset, y: midpoint.y + py * labelOffset)
+
+    let text = "\(Int(length.rounded())) px" as NSString
+    let attributes: [NSAttributedString.Key: Any] = [
+      .font: NSFont.systemFont(ofSize: 12, weight: .semibold),
+      .foregroundColor: NSColor.white,
+    ]
+    let textSize = text.size(withAttributes: attributes)
+    let horizontalPadding: CGFloat = 6
+    let verticalPadding: CGFloat = 3
+    let backgroundRect = CGRect(
+      x: labelCenter.x - textSize.width / 2 - horizontalPadding,
+      y: labelCenter.y - textSize.height / 2 - verticalPadding,
+      width: textSize.width + horizontalPadding * 2,
+      height: textSize.height + verticalPadding * 2
+    )
+
+    context.setFillColor(NSColor(properties.strokeColor).cgColor)
+    let backgroundPath = CGPath(
+      roundedRect: backgroundRect,
+      cornerWidth: backgroundRect.height / 2,
+      cornerHeight: backgroundRect.height / 2,
+      transform: nil
+    )
+    context.addPath(backgroundPath)
+    context.fillPath()
+
+    text.draw(
+      at: CGPoint(x: backgroundRect.midX - textSize.width / 2, y: backgroundRect.midY - textSize.height / 2),
+      withAttributes: attributes
+    )
+  }
+
+  private func drawMeasurementTick(at point: CGPoint, perpendicular: CGPoint, halfLength: CGFloat) {
+    context.move(to: CGPoint(x: point.x - perpendicular.x * halfLength, y: point.y - perpendicular.y * halfLength))
+    context.addLine(to: CGPoint(x: point.x + perpendicular.x * halfLength, y: point.y + perpendicular.y * halfLength))
+    context.strokePath()
   }
 
   private func drawText(_ content: String, in bounds: CGRect, properties: AnnotationProperties) {

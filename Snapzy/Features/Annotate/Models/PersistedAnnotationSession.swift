@@ -131,7 +131,7 @@ struct PersistedAnnotationItem: Codable, Equatable {
 
 struct PersistedAnnotationType: Codable, Equatable {
   enum Kind: String, Codable {
-    case path, rectangle, filledRectangle, oval, arrow, line, text, highlight, blur, counter, stamp, watermark, embeddedImage, spotlight
+    case path, rectangle, filledRectangle, oval, arrow, line, measurement, text, highlight, blur, counter, stamp, watermark, embeddedImage, spotlight
   }
 
   var kind: Kind
@@ -164,6 +164,10 @@ struct PersistedAnnotationType: Codable, Equatable {
       arrow = PersistedArrowGeometry(geometry: geometry)
     case .line(let start, let end):
       kind = .line
+      lineStart = start
+      lineEnd = end
+    case .measurement(let start, let end):
+      kind = .measurement
       lineStart = start
       lineEnd = end
     case .text(let value):
@@ -208,6 +212,9 @@ struct PersistedAnnotationType: Codable, Equatable {
     case .line:
       guard let lineStart, let lineEnd else { return nil }
       return .line(start: lineStart, end: lineEnd)
+    case .measurement:
+      guard let lineStart, let lineEnd else { return nil }
+      return .measurement(start: lineStart, end: lineEnd)
     case .text:
       return .text(text ?? "")
     case .highlight:
