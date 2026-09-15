@@ -905,7 +905,7 @@ final class AnnotateCoreTests: XCTestCase {
     let state = makeAnnotateState()
     let counter = AnnotationItem(type: .counter(value: 1, style: .numeric), bounds: .zero, properties: AnnotationProperties())
     state.annotations = [counter]
-    state.selectedAnnotationIds = [counter.id]
+    state.setSelectedAnnotationIds([counter.id])
 
     state.setActiveCounterNumberingStyle(.alphabetic)
 
@@ -927,7 +927,7 @@ final class AnnotateCoreTests: XCTestCase {
 
     XCTAssertTrue(state.quickPropertiesSupportsCounterStartValue)
 
-    state.selectedAnnotationIds = [counter.id]
+    state.setSelectedAnnotationIds([counter.id])
 
     XCTAssertFalse(
       state.quickPropertiesSupportsCounterStartValue,
