@@ -130,6 +130,16 @@ struct AdvancedSettingsView: View {
           Toggle("", isOn: $browserBridgeEnabled)
             .labelsHidden()
         }
+
+        SettingRow(
+          icon: "list.bullet.clipboard",
+          title: L10n.PreferencesAdvanced.inspectionResultsTitle,
+          description: L10n.PreferencesAdvanced.inspectionResultsDescription
+        ) {
+          Button(L10n.PreferencesAdvanced.inspectionResultsButton) {
+            InspectionResultsWindowController.shared.showWindow()
+          }
+        }
       }
 
       Section(L10n.PreferencesAdvanced.diagnosticsSection) {

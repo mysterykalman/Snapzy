@@ -307,6 +307,21 @@ nonisolated enum L10n {
       defaultValue: "Let the Capture browser extension connect for element inspection and accessibility audits",
       comment: "Advanced preferences setting description"
     )
+    static let inspectionResultsTitle = string(
+      "preferences-advanced.inspection-results-title",
+      defaultValue: "Inspection Results",
+      comment: "Advanced preferences setting title"
+    )
+    static let inspectionResultsDescription = string(
+      "preferences-advanced.inspection-results-description",
+      defaultValue: "View accessibility and ecommerce audit findings collected from the browser extension",
+      comment: "Advanced preferences setting description"
+    )
+    static let inspectionResultsButton = string(
+      "preferences-advanced.inspection-results-button",
+      defaultValue: "View Results",
+      comment: "Button that opens the Inspection Results window"
+    )
     static let diagnosticsSection = PreferencesGeneral.diagnosticsSection
     static let diagnosticLoggingTitle = PreferencesGeneral.diagnosticLoggingTitle
     static let diagnosticLoggingDescription = PreferencesGeneral.diagnosticLoggingDescription

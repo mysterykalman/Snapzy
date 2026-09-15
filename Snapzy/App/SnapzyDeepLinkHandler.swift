@@ -102,6 +102,8 @@ struct SnapzyDeepLinkHandler {
       PixelMeterOverlay.present(mode: .ruler) { _ in }
     case .designOverlay:
       FigmaOverlayManager.shared.toggle()
+    case .openInspectionResults:
+      InspectionResultsWindowController.shared.showWindow()
     }
   }
 }
@@ -129,6 +131,7 @@ enum SnapzyDeepLinkAction: Equatable {
   case colorLoupe
   case ruler
   case designOverlay
+  case openInspectionResults
 
   init?(url: URL) {
     guard url.scheme?.lowercased() == "snapzy" else { return nil }
@@ -185,6 +188,8 @@ enum SnapzyDeepLinkAction: Equatable {
       self = .ruler
     case "design/overlay", "figma-overlay", "design-overlay":
       self = .designOverlay
+    case "inspect/results", "inspection-results", "open/inspection-results":
+      self = .openInspectionResults
     case let value where value.hasPrefix("settings/"):
       self = .openSettings(Self.preferencesTab(from: components, pathParts: pathParts))
     case let value where value.hasPrefix("preferences/"):
@@ -218,6 +223,7 @@ enum SnapzyDeepLinkAction: Equatable {
     case .colorLoupe: return "colorLoupe"
     case .ruler: return "ruler"
     case .designOverlay: return "designOverlay"
+    case .openInspectionResults: return "openInspectionResults"
     }
   }
 
