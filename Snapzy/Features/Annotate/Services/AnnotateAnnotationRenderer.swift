@@ -99,8 +99,8 @@ nonisolated struct AnnotationRenderer {
         strokeWidth: annotation.properties.strokeWidth
       )
 
-    case .counter(let value):
-      drawCounter(value: value, in: annotation.bounds, properties: annotation.properties)
+    case .counter(let value, let style):
+      drawCounter(value: value, style: style, in: annotation.bounds, properties: annotation.properties)
 
     case .blur(let blurType):
       drawBlur(
@@ -418,7 +418,7 @@ nonisolated struct AnnotationRenderer {
     }
   }
 
-  private func drawCounter(value: Int, in bounds: CGRect, properties: AnnotationProperties) {
+  private func drawCounter(value: Int, style: CounterNumberingStyle, in bounds: CGRect, properties: AnnotationProperties) {
     let rect: CGRect
     if bounds.standardized.isEmpty {
       let size = AnnotationProperties.counterDiameter(for: properties.strokeWidth)
@@ -430,12 +430,16 @@ nonisolated struct AnnotationRenderer {
     context.setFillColor(NSColor(properties.strokeColor).cgColor)
     context.fillEllipse(in: rect)
 
-    let fontSize = min(max(rect.height * 0.5, 11), 56)
+    let label = style.label(for: value)
+    let baseFontSize = min(max(rect.height * 0.5, 11), 56)
+    // Longer labels (roman numerals, multi-letter alphabetic overflow) need a smaller
+    // font to fit the fixed circular badge than a single digit does.
+    let fontSize = baseFontSize / (1 + 0.3 * CGFloat(max(0, label.count - 1)))
     let attributes: [NSAttributedString.Key: Any] = [
       .font: NSFont.systemFont(ofSize: fontSize, weight: .bold),
       .foregroundColor: NSColor.white,
     ]
-    let text = "\(value)" as NSString
+    let text = label as NSString
     let textSize = text.size(withAttributes: attributes)
     let textPoint = CGPoint(
       x: rect.midX - textSize.width / 2,

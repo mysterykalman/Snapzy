@@ -84,6 +84,75 @@ nonisolated enum WatermarkStyle: String, CaseIterable, Identifiable, Equatable {
   }
 }
 
+/// Numbering format for the Counter annotation's badge label.
+nonisolated enum CounterNumberingStyle: String, CaseIterable, Identifiable, Equatable {
+  case numeric
+  case alphabetic
+  case roman
+
+  var id: String { rawValue }
+
+  var displayName: String {
+    switch self {
+    case .numeric: L10n.AnnotateUI.counterStyleNumeric
+    case .alphabetic: L10n.AnnotateUI.counterStyleAlphabetic
+    case .roman: L10n.AnnotateUI.counterStyleRoman
+    }
+  }
+
+  var icon: String {
+    switch self {
+    case .numeric: "textformat.123"
+    case .alphabetic: "character"
+    case .roman: "textformat.size"
+    }
+  }
+
+  /// Formats a 1-based placement index as this style's badge label.
+  func label(for value: Int) -> String {
+    switch self {
+    case .numeric:
+      return "\(value)"
+    case .alphabetic:
+      return Self.alphabeticLabel(for: value)
+    case .roman:
+      return Self.romanLabel(for: value)
+    }
+  }
+
+  /// Spreadsheet-column style: 1=A, 2=B, ..., 26=Z, 27=AA, 28=AB, ...
+  private static func alphabeticLabel(for value: Int) -> String {
+    guard value > 0 else { return "\(value)" }
+    var remaining = value
+    var letters = ""
+    while remaining > 0 {
+      let remainder = (remaining - 1) % 26
+      letters = String(UnicodeScalar(65 + remainder)!) + letters
+      remaining = (remaining - 1) / 26
+    }
+    return letters
+  }
+
+  private static let romanNumerals: [(value: Int, symbol: String)] = [
+    (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"),
+    (100, "C"), (90, "XC"), (50, "L"), (40, "XL"),
+    (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I"),
+  ]
+
+  private static func romanLabel(for value: Int) -> String {
+    guard value > 0 else { return "\(value)" }
+    var remaining = value
+    var result = ""
+    for (amount, symbol) in romanNumerals {
+      while remaining >= amount {
+        result += symbol
+        remaining -= amount
+      }
+    }
+    return result
+  }
+}
+
 nonisolated enum TextPresentation: String, CaseIterable, Identifiable, Equatable {
   case plain
   case label
@@ -1286,7 +1355,7 @@ nonisolated enum AnnotationType: Equatable {
   case text(String)
   case highlight([CGPoint])
   case blur(BlurType)
-  case counter(Int)
+  case counter(value: Int, style: CounterNumberingStyle)
   case watermark(String)
   case embeddedImage(UUID)
   case spotlight

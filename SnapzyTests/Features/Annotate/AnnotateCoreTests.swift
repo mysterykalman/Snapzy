@@ -864,10 +864,84 @@ final class AnnotateCoreTests: XCTestCase {
       context: makeContext(counterValue: 5)
     )
 
-    guard case .counter(5) = annotation?.type else {
+    guard case .counter(let value, let style) = annotation?.type, value == 5, style == .numeric else {
       return XCTFail("Expected counter value 5, got \(String(describing: annotation?.type))")
     }
     XCTAssertEqual(annotation?.bounds, CGRect(x: 38, y: 48, width: 24, height: 24))
+  }
+
+  @MainActor
+  func testNextCounterValue_startsFromCustomStartValueWhenNoCountersExist() {
+    let state = makeAnnotateState()
+    state.counterStartValue = 5
+
+    XCTAssertEqual(state.nextCounterValue(), 5)
+  }
+
+  @MainActor
+  func testNextCounterValue_incrementsFromHighestExistingCounterRegardlessOfStartValue() {
+    let state = makeAnnotateState()
+    state.counterStartValue = 5
+    state.annotations = [
+      AnnotationItem(type: .counter(value: 5, style: .numeric), bounds: .zero, properties: AnnotationProperties()),
+      AnnotationItem(type: .counter(value: 7, style: .numeric), bounds: .zero, properties: AnnotationProperties()),
+    ]
+
+    XCTAssertEqual(state.nextCounterValue(), 8)
+  }
+
+  @MainActor
+  func testSetActiveCounterNumberingStyle_updatesGlobalDefaultWhenNothingSelected() {
+    let state = makeAnnotateState()
+
+    state.setActiveCounterNumberingStyle(.roman)
+
+    XCTAssertEqual(state.counterNumberingStyle, .roman)
+    XCTAssertEqual(state.activeCounterNumberingStyle, .roman)
+  }
+
+  @MainActor
+  func testSetActiveCounterNumberingStyle_updatesSelectedCounterAnnotationInPlace() {
+    let state = makeAnnotateState()
+    let counter = AnnotationItem(type: .counter(value: 1, style: .numeric), bounds: .zero, properties: AnnotationProperties())
+    state.annotations = [counter]
+    state.selectedAnnotationIds = [counter.id]
+
+    state.setActiveCounterNumberingStyle(.alphabetic)
+
+    guard case .counter(let value, let style) = state.annotations[0].type else {
+      return XCTFail("Expected a counter annotation")
+    }
+    XCTAssertEqual(value, 1)
+    XCTAssertEqual(style, .alphabetic)
+    // Editing an existing counter must not disturb the global default used by new counters.
+    XCTAssertEqual(state.counterNumberingStyle, .numeric)
+  }
+
+  @MainActor
+  func testQuickPropertiesSupportsCounterStartValue_hiddenWhenACounterIsSelected() {
+    let state = makeAnnotateState()
+    let counter = AnnotationItem(type: .counter(value: 1, style: .numeric), bounds: .zero, properties: AnnotationProperties())
+    state.annotations = [counter]
+    state.activateTool(.counter)
+
+    XCTAssertTrue(state.quickPropertiesSupportsCounterStartValue)
+
+    state.selectedAnnotationIds = [counter.id]
+
+    XCTAssertFalse(
+      state.quickPropertiesSupportsCounterStartValue,
+      "Start value only affects the next new counter, so it shouldn't show while editing an existing one."
+    )
+  }
+
+  @MainActor
+  func testQuickCounterStartValueBinding_clampsBelowOneToOne() {
+    let state = makeAnnotateState()
+
+    state.quickCounterStartValueBinding.wrappedValue = -3
+
+    XCTAssertEqual(state.counterStartValue, 1)
   }
 
   func testAnnotationFactory_rejectsNonDrawingToolsAndSinglePointPaths() {

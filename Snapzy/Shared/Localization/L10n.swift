@@ -6313,6 +6313,31 @@ nonisolated enum L10n {
       defaultValue: "Blur Type",
       comment: "Section title for annotate blur type controls"
     )
+    static let counterStyleTitle = string(
+      "annotate.counter-style-title",
+      defaultValue: "Style",
+      comment: "Section title for the counter annotation's numbering style controls"
+    )
+    static let counterStyleNumeric = string(
+      "annotate.counter-style-numeric",
+      defaultValue: "Numeric",
+      comment: "Label for the numeric (1, 2, 3, ...) counter numbering style"
+    )
+    static let counterStyleAlphabetic = string(
+      "annotate.counter-style-alphabetic",
+      defaultValue: "Alphabetic",
+      comment: "Label for the alphabetic (A, B, C, ...) counter numbering style"
+    )
+    static let counterStyleRoman = string(
+      "annotate.counter-style-roman",
+      defaultValue: "Roman Numerals",
+      comment: "Label for the Roman numeral (I, II, III, ...) counter numbering style"
+    )
+    static let counterStartValueTitle = string(
+      "annotate.counter-start-value-title",
+      defaultValue: "Start At",
+      comment: "Section title for the control that sets the next counter annotation's starting number"
+    )
     static let pixelated = string(
       "annotate.pixelated",
       defaultValue: "Pixelated",

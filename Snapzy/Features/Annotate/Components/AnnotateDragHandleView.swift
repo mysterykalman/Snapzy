@@ -582,8 +582,8 @@ private struct DragFallbackSignature: Equatable {
       return "highlight|\(points.map(pointSignature).joined(separator: ";"))"
     case .blur(let blurType):
       return "blur|\(blurType.rawValue)"
-    case .counter(let value):
-      return "counter|\(value)"
+    case .counter(let value, let style):
+      return "counter|\(value)|\(style.rawValue)"
     case .watermark(let text):
       return "watermark|\(text)"
     case .embeddedImage(let assetId):

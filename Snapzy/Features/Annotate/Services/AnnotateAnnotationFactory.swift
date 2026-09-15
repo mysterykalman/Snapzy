@@ -19,6 +19,7 @@ enum AnnotationFactory {
     var arrowEndHead: ArrowEndpointStyle = .arrow
     var blurType: BlurType
     var counterValue: Int
+    var counterStyle: CounterNumberingStyle = .numeric
     var watermarkText: String
     var activeAnnotationBounds: CGRect
   }
@@ -44,6 +45,7 @@ enum AnnotationFactory {
         arrowEndHead: state.arrowEndHead,
         blurType: state.blurType,
         counterValue: state.nextCounterValue(),
+        counterStyle: state.counterNumberingStyle,
         watermarkText: state.watermarkText,
         activeAnnotationBounds: state.activeAnnotationBounds
       )
@@ -116,7 +118,7 @@ enum AnnotationFactory {
       type = .spotlight
 
     case .counter:
-      type = .counter(context.counterValue)
+      type = .counter(value: context.counterValue, style: context.counterStyle)
 
     case .watermark:
       let text = context.watermarkText.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -88,8 +88,8 @@ final class AnnotateCreationTests: XCTestCase {
   func testNextCounterValueReturnsMaxExistingPlusOne() {
     let state = makeAnnotateState()
     state.annotations = [
-      AnnotationItem(type: .counter(1), bounds: .zero, properties: AnnotationProperties()),
-      AnnotationItem(type: .counter(5), bounds: .zero, properties: AnnotationProperties()),
+      AnnotationItem(type: .counter(value: 1, style: .numeric), bounds: .zero, properties: AnnotationProperties()),
+      AnnotationItem(type: .counter(value: 5, style: .numeric), bounds: .zero, properties: AnnotationProperties()),
     ]
 
     // Derived from the maximum existing counter, not the count of counters.
@@ -101,7 +101,7 @@ final class AnnotateCreationTests: XCTestCase {
     let state = makeAnnotateState()
     state.annotations = [
       AnnotationItem(type: .rectangle, bounds: .zero, properties: AnnotationProperties()),
-      AnnotationItem(type: .counter(3), bounds: .zero, properties: AnnotationProperties()),
+      AnnotationItem(type: .counter(value: 3, style: .numeric), bounds: .zero, properties: AnnotationProperties()),
     ]
 
     XCTAssertEqual(state.nextCounterValue(), 4)

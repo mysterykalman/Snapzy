@@ -69,12 +69,12 @@ final class AnnotationItemHitTests: XCTestCase {
   }
 
   func testCounter_containsPoint_insideEllipse() {
-    let item = AnnotationItem(type: .counter(1), bounds: CGRect(x: 40, y: 40, width: 20, height: 20), properties: AnnotationProperties())
+    let item = AnnotationItem(type: .counter(value: 1, style: .numeric), bounds: CGRect(x: 40, y: 40, width: 20, height: 20), properties: AnnotationProperties())
     XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 50)))
   }
 
   func testCounter_containsPoint_outside() {
-    let item = AnnotationItem(type: .counter(1), bounds: CGRect(x: 40, y: 40, width: 20, height: 20), properties: AnnotationProperties())
+    let item = AnnotationItem(type: .counter(value: 1, style: .numeric), bounds: CGRect(x: 40, y: 40, width: 20, height: 20), properties: AnnotationProperties())
     XCTAssertFalse(item.containsPoint(CGPoint(x: 100, y: 100)))
   }
 

@@ -247,6 +247,8 @@ final class AnnotateState: ObservableObject {
   @Published var arrowStartHead: ArrowEndpointStyle = .none
   @Published var arrowEndHead: ArrowEndpointStyle = .arrow
   @Published var watermarkText: String = "Snapzy"
+  @Published var counterNumberingStyle: CounterNumberingStyle = .numeric
+  @Published var counterStartValue: Int = 1
   @Published var spotlightOpacity: CGFloat = 0.5
   @Published private var annotationToolProperties: [AnnotationToolType: AnnotationProperties] = [:]
   private var isQuickPropertiesGestureEditing = false
@@ -2800,10 +2802,13 @@ final class AnnotateState: ObservableObject {
   /// This ensures undo/redo correctly adjusts future counter values.
   func nextCounterValue() -> Int {
     let maxExisting = annotations.compactMap { annotation -> Int? in
-      if case .counter(let v) = annotation.type { return v }
+      if case .counter(let v, _) = annotation.type { return v }
       return nil
-    }.max() ?? 0
-    return maxExisting + 1
+    }.max()
+    if let maxExisting {
+      return maxExisting + 1
+    }
+    return counterStartValue
   }
 
   // MARK: - Crop Methods
@@ -3662,6 +3667,13 @@ final class AnnotateState: ObservableObject {
     annotations[index].type = .blur(blurType)
   }
 
+  func updateCounterNumberingStyle(id: UUID, style: CounterNumberingStyle) {
+    guard let index = annotations.firstIndex(where: { $0.id == id }),
+          case .counter(let value, _) = annotations[index].type else { return }
+
+    annotations[index].type = .counter(value: value, style: style)
+  }
+
   /// Update annotation properties (strokeWidth, fontSize, colors)
   func updateAnnotationProperties(
     id: UUID,
@@ -3963,6 +3975,13 @@ final class AnnotateState: ObservableObject {
     }
   }
 
+  private var selectedCounterAnnotations: [AnnotationItem] {
+    selectedAnnotations.filter { annotation in
+      if case .counter = annotation.type { return true }
+      return false
+    }
+  }
+
   private var selectedWatermarkAnnotations: [AnnotationItem] {
     selectedAnnotations.filter { annotation in
       if case .watermark = annotation.type { return true }
@@ -4117,6 +4136,23 @@ final class AnnotateState: ObservableObject {
       blurAnnotations.forEach { updateBlurType(id: $0.id, blurType: type) }
     } else {
       blurType = type
+    }
+  }
+
+  var activeCounterNumberingStyle: CounterNumberingStyle {
+    if let annotation = selectedCounterAnnotations.first,
+       case .counter(_, let style) = annotation.type {
+      return style
+    }
+    return counterNumberingStyle
+  }
+
+  func setActiveCounterNumberingStyle(_ style: CounterNumberingStyle) {
+    let counterAnnotations = selectedCounterAnnotations
+    if !counterAnnotations.isEmpty {
+      counterAnnotations.forEach { updateCounterNumberingStyle(id: $0.id, style: style) }
+    } else {
+      counterNumberingStyle = style
     }
   }
 
@@ -5116,6 +5152,51 @@ final class AnnotateState: ObservableObject {
       },
       set: { [weak self] newType in
         self?.setActiveBlurType(newType)
+      }
+    )
+  }
+
+  var quickPropertiesSupportsCounterStyle: Bool {
+    guard editorMode == .annotate,
+          selectedTool != .crop else {
+      return false
+    }
+
+    let selected = quickPropertiesSelectionAnnotations
+    if !selected.isEmpty {
+      return selected.contains {
+        if case .counter = $0.type { return true }
+        return false
+      }
+    }
+
+    return quickPropertiesTool == .counter
+  }
+
+  var quickCounterNumberingStyleBinding: Binding<CounterNumberingStyle> {
+    Binding(
+      get: { [weak self] in
+        self?.activeCounterNumberingStyle ?? .numeric
+      },
+      set: { [weak self] newStyle in
+        self?.setActiveCounterNumberingStyle(newStyle)
+      }
+    )
+  }
+
+  /// The start value only affects the *next* counter placed, so it's only shown
+  /// when there's no existing counter selected to (confusingly) apply it to.
+  var quickPropertiesSupportsCounterStartValue: Bool {
+    quickPropertiesSupportsCounterStyle && selectedCounterAnnotations.isEmpty
+  }
+
+  var quickCounterStartValueBinding: Binding<Int> {
+    Binding(
+      get: { [weak self] in
+        self?.counterStartValue ?? 1
+      },
+      set: { [weak self] newValue in
+        self?.counterStartValue = max(1, newValue)
       }
     )
   }

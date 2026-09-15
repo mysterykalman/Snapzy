@@ -137,6 +137,9 @@ struct PersistedAnnotationType: Codable, Equatable {
   var text: String?
   var blurType: String?
   var counterValue: Int?
+  /// Optional so pre-existing sidecars (and older app builds) decode without it,
+  /// defaulting to `.numeric` -- the only style that ever existed before this field.
+  var counterNumberingStyle: String?
   var embeddedImageAssetId: UUID?
 
   init(annotationType: AnnotationType) {
@@ -166,9 +169,10 @@ struct PersistedAnnotationType: Codable, Equatable {
     case .blur(let type):
       kind = .blur
       blurType = type.rawValue
-    case .counter(let value):
+    case .counter(let value, let style):
       kind = .counter
       counterValue = value
+      counterNumberingStyle = style.rawValue
     case .watermark(let value):
       kind = .watermark
       text = value
@@ -202,7 +206,10 @@ struct PersistedAnnotationType: Codable, Equatable {
     case .blur:
       return .blur(BlurType(rawValue: blurType ?? "") ?? .pixelated)
     case .counter:
-      return .counter(counterValue ?? 1)
+      return .counter(
+        value: counterValue ?? 1,
+        style: CounterNumberingStyle(rawValue: counterNumberingStyle ?? "") ?? .numeric
+      )
     case .watermark:
       return .watermark(text ?? "")
     case .embeddedImage:

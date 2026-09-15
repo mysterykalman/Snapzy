@@ -117,6 +117,24 @@ private enum QuickPropertiesDensity {
     }
   }
 
+  var counterStyleControlWidth: CGFloat {
+    let buttonCount = CGFloat(CounterNumberingStyle.allCases.count)
+    let spacing: CGFloat = 5
+    switch self {
+    case .regular:
+      return buttonCount * 28 + (buttonCount - 1) * spacing + 48
+    case .compact:
+      return buttonCount * 24 + (buttonCount - 1) * spacing + 40
+    }
+  }
+
+  var counterStartValueControlWidth: CGFloat {
+    switch self {
+    case .regular: return 96
+    case .compact: return 84
+    }
+  }
+
   var toolPickerWidth: CGFloat {
     switch self {
     case .regular: return 148
@@ -174,6 +192,8 @@ struct AnnotateQuickPropertiesBar: View {
     let showTextFontSize = state.quickPropertiesSupportsTextFontSize
     let showWatermark = state.quickPropertiesSupportsWatermark
     let showBlurType = state.quickPropertiesSupportsBlurType
+    let showCounterStyle = state.quickPropertiesSupportsCounterStyle
+    let showCounterStartValue = state.quickPropertiesSupportsCounterStartValue
     let showStrokeWidth = state.quickPropertiesSupportsStrokeWidth
     let showCornerRadius = state.quickPropertiesSupportsCornerRadius
     let showLineStyle = state.quickPropertiesSupportsLineStyle
@@ -185,6 +205,7 @@ struct AnnotateQuickPropertiesBar: View {
       || showTextFontSize
       || showWatermark
       || showBlurType
+      || showCounterStyle
       || showStrokeWidth
       || showCornerRadius
       || showLineStyle
@@ -199,7 +220,9 @@ struct AnnotateQuickPropertiesBar: View {
     let hasBeforeWatermarkOpacity = hasBeforeWatermarkStyle || showWatermark
     let hasBeforeWatermarkRotation = hasBeforeWatermarkOpacity || showWatermark
     let hasBeforeBlurType = hasBeforeWatermarkRotation || showWatermark
-    let hasBeforeSpotlightOpacity = hasBeforeBlurType || showBlurType
+    let hasBeforeCounterStyle = hasBeforeBlurType || showBlurType
+    let hasBeforeCounterStartValue = hasBeforeCounterStyle || showCounterStyle
+    let hasBeforeSpotlightOpacity = hasBeforeCounterStartValue || showCounterStartValue
     let hasBeforeStrokeWidth = hasBeforeSpotlightOpacity || state.quickPropertiesSupportsSpotlightOpacity
     let hasBeforeCornerRadius = hasBeforeStrokeWidth || showStrokeWidth
     let hasBeforeLineStyle = hasBeforeCornerRadius || showCornerRadius
@@ -375,6 +398,31 @@ struct AnnotateQuickPropertiesBar: View {
         QuickBlurTypeControl(
           selectedType: state.quickBlurTypeBinding,
           buttonWidth: density.controlButtonWidth,
+          groupSpacing: density.groupSpacing
+        )
+      }
+
+      activePropertySlot(
+        isVisible: showCounterStyle,
+        isEnabled: state.quickPropertiesSupportsCounterStyle,
+        showsLeadingDivider: hasBeforeCounterStyle,
+        width: density.counterStyleControlWidth
+      ) {
+        QuickCounterStyleControl(
+          selectedStyle: state.quickCounterNumberingStyleBinding,
+          buttonWidth: density.controlButtonWidth,
+          groupSpacing: density.groupSpacing
+        )
+      }
+
+      activePropertySlot(
+        isVisible: showCounterStartValue,
+        isEnabled: state.quickPropertiesSupportsCounterStartValue,
+        showsLeadingDivider: hasBeforeCounterStartValue,
+        width: density.counterStartValueControlWidth
+      ) {
+        QuickCounterStartValueControl(
+          value: state.quickCounterStartValueBinding,
           groupSpacing: density.groupSpacing
         )
       }
@@ -1721,6 +1769,85 @@ private struct QuickBlurTypeControl: View {
           .help(blurType.displayName)
         }
       }
+    }
+  }
+}
+
+private struct QuickCounterStyleControl: View {
+  @Binding var selectedStyle: CounterNumberingStyle
+  let buttonWidth: CGFloat
+  let groupSpacing: CGFloat
+
+  var body: some View {
+    QuickPropertiesGroup(title: L10n.AnnotateUI.counterStyleTitle, spacing: groupSpacing) {
+      HStack(spacing: 5) {
+        ForEach(CounterNumberingStyle.allCases) { style in
+          Button {
+            selectedStyle = style
+          } label: {
+            Image(systemName: style.icon)
+              .font(.system(size: 12, weight: .semibold))
+              .foregroundColor(selectedStyle == style ? .accentColor : .secondary)
+              .frame(width: buttonWidth, height: 24)
+              .background(
+                RoundedRectangle(cornerRadius: 7)
+                  .fill(selectedStyle == style ? Color.accentColor.opacity(0.16) : SidebarColors.itemDefault)
+              )
+              .overlay(
+                RoundedRectangle(cornerRadius: 7)
+                  .stroke(
+                    selectedStyle == style ? Color.accentColor.opacity(0.45) : Color.secondary.opacity(0.14),
+                    lineWidth: 1
+                  )
+              )
+          }
+          .buttonStyle(.plain)
+          .help(style.displayName)
+        }
+      }
+    }
+  }
+}
+
+private struct QuickCounterStartValueControl: View {
+  @Binding var value: Int
+  let groupSpacing: CGFloat
+
+  var body: some View {
+    QuickPropertiesGroup(title: L10n.AnnotateUI.counterStartValueTitle, spacing: groupSpacing) {
+      HStack(spacing: 2) {
+        Button {
+          value = max(1, value - 1)
+        } label: {
+          Image(systemName: "minus")
+            .font(.system(size: 11, weight: .semibold))
+            .frame(width: 20, height: 24)
+        }
+        .buttonStyle(.plain)
+
+        Text("\(value)")
+          .font(Typography.labelSmall)
+          .foregroundColor(SidebarColors.labelPrimary)
+          .frame(minWidth: 20)
+
+        Button {
+          value += 1
+        } label: {
+          Image(systemName: "plus")
+            .font(.system(size: 11, weight: .semibold))
+            .frame(width: 20, height: 24)
+        }
+        .buttonStyle(.plain)
+      }
+      .padding(.horizontal, 4)
+      .background(
+        RoundedRectangle(cornerRadius: 7)
+          .fill(SidebarColors.itemDefault)
+      )
+      .overlay(
+        RoundedRectangle(cornerRadius: 7)
+          .stroke(Color.secondary.opacity(0.14), lineWidth: 1)
+      )
     }
   }
 }

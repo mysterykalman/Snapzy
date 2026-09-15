@@ -82,7 +82,7 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 
 ## Counter, Highlighter, Watermark, Crop
 
-- Counter: click-to-place, auto-increment per placement; diameter derived from stroke width.
+- Counter: click-to-place, auto-increment per placement (from a configurable start value); diameter derived from stroke width. Numbering format (numeric / alphabetic / Roman numerals) is chosen via the quick properties bar and applies to new counters, or to the currently selected one.
 - Highlighter: freehand with auto-straighten for near-straight strokes.
 - Highlighter text snapping: while dragging, the stroke snaps to detected text lines — centered on each line, height `1.15 ×` the median detected line height of the drag (uniform across a multi-line sweep, carried by `strokeWidth` since highlights render at 3× stroke width), ends snapped to word edges. A drag across several lines of one block emits one bar per line with text-selection semantics in a single undo step. `AnnotateTextSnapDetector` (one Vision pass per image, computed when the highlighter is first activated, cached on `AnnotateState.textLineProfile`) feeds the pure math in `AnnotateTextSnapping`. Toggle in the highlighter's quick-properties bar (defaults context only — a committed highlight's geometry is fixed) or Settings → Annotate (`annotate.highlighterTextSnappingEnabled`, default on); hold ⌘ mid-drag to bypass. Falls back to freehand when no text is near the drag, the drag is vertical/short, or the path leaves the text band.
 - Watermark: `WatermarkStyle` single / diagonal / tiled; editable text, opacity, size, rotation, color.

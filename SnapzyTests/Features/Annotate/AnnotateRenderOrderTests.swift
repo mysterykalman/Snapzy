@@ -55,7 +55,7 @@ final class AnnotateRenderOrderTests: XCTestCase {
     let items = [
       makeItem(.rectangle),
       makeItem(.blur(.pixelated)),
-      makeItem(.counter(1)),
+      makeItem(.counter(value: 1, style: .numeric)),
       makeItem(.embeddedImage(UUID())),
       makeItem(.watermark("wm")),
       makeItem(.spotlight),
@@ -70,7 +70,7 @@ final class AnnotateRenderOrderTests: XCTestCase {
   func testRenderOrdered_withoutSpecialTiers_matchesInputOrder() {
     let items = [
       makeItem(.rectangle),
-      makeItem(.counter(2)),
+      makeItem(.counter(value: 2, style: .numeric)),
       makeItem(.text("note")),
     ]
 
