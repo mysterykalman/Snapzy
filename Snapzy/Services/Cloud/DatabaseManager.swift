@@ -235,6 +235,46 @@ final class DatabaseManager: @unchecked Sendable {
       )
     }
 
+    migrator.registerMigration("v3_createBaselines") { db in
+      try db.create(table: "baseline") { t in
+        t.column("id", .text).primaryKey()
+        t.column("name", .text).notNull()
+        t.column("createdAt", .datetime).notNull()
+        t.column("sourceCaptureID", .text).notNull()
+        t.column("viewportWidth", .double)
+        t.column("viewportHeight", .double)
+      }
+      try db.create(
+        index: "idx_baseline_sourceCaptureID",
+        on: "baseline",
+        columns: ["sourceCaptureID"]
+      )
+
+      try db.create(table: "baselineComparison") { t in
+        t.column("id", .text).primaryKey()
+        t.column("baselineID", .text).notNull()
+        t.column("comparedCaptureID", .text).notNull()
+        t.column("comparedAt", .datetime).notNull()
+        t.column("differingRatio", .double).notNull()
+        // `threshold` is a Codable enum with an associated value
+        // (ChangeThreshold), so GRDB's derived Codable-record support
+        // stores it as a JSON blob in this one column rather than
+        // needing a separate kind/value column pair.
+        t.column("threshold", .blob).notNull()
+        t.column("approvalState", .text).notNull()
+      }
+      try db.create(
+        index: "idx_baselineComparison_baselineID",
+        on: "baselineComparison",
+        columns: ["baselineID"]
+      )
+      try db.create(
+        index: "idx_baselineComparison_comparedAt",
+        on: "baselineComparison",
+        columns: ["comparedAt"]
+      )
+    }
+
     return migrator
   }
 
