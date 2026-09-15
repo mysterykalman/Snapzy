@@ -12,18 +12,18 @@ final class ElementDiffTests: XCTestCase {
   private func makeEvidence(
     stableID: String,
     rect: Region = .init(x: 0, y: 0, width: 100, height: 50),
+    boxModelJSON: String? = nil,
     typographyJSON: String? = nil,
-    appearanceJSON: String? = nil,
-    boxModelJSON: String? = nil
+    appearanceJSON: String? = nil
   ) -> ElementEvidence {
     ElementEvidence(
       url: "https://example.com", title: "Example",
       viewport: .init(width: 1440, height: 900, devicePixelRatio: 2, scrollX: 0, scrollY: 0),
       locator: .init(candidates: [.init(strategy: .stableID, value: stableID)]),
       rect: rect,
+      boxModelJSON: boxModelJSON,
       typographyJSON: typographyJSON,
-      appearanceJSON: appearanceJSON,
-      boxModelJSON: boxModelJSON
+      appearanceJSON: appearanceJSON
     )
   }
 
