@@ -58,6 +58,16 @@ final class DatabaseManager: @unchecked Sendable {
   let dbPool: DatabasePool
   let databaseURL: URL
 
+  // The project builds with SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor, so
+  // without this, the compiler synthesizes an isolated deinit that hits a
+  // Swift runtime bug in swift_task_deinitOnExecutorMainActorBackDeploy,
+  // corrupting the heap when a *non-singleton* instance of this class is
+  // deallocated (DatabaseManager.shared() never triggers it because that
+  // instance lives for the app's whole lifetime -- but DatabaseManager
+  // instances created directly via openDatabase(at:), e.g. in tests, do).
+  // Same root cause and fix as BrowserBridgeCoordinator's nonisolated deinit.
+  nonisolated deinit {}
+
   private init(databaseURL: URL = DatabaseManager.defaultDatabaseURL) throws {
     let dir = databaseURL.deletingLastPathComponent()
     do {
