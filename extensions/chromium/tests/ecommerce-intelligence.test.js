@@ -510,5 +510,34 @@ function load(html, windowSetup) {
   check("extractPDPData returns null when there's no Product structured data", api.extractPDPData() === null);
 }
 
+// --- runAndReportEcommerceAudit relays a snapshot the same way
+// accessibility-audit.js's runAndReportAccessibilityAudit does ---
+{
+  const sentMessages = [];
+  let triggerListener = null;
+  load(`<html><body>No structured data here.</body></html>`, (window) => {
+    window.chrome = {
+      runtime: {
+        sendMessage: (message) => sentMessages.push(message),
+        onMessage: { addListener: (fn) => { triggerListener = fn; } }
+      }
+    };
+  });
+
+  check("runAndReportEcommerceAudit registers a capture.ecommerce.audit.trigger listener", typeof triggerListener === "function");
+  triggerListener({ kind: "capture.ecommerce.audit.trigger" });
+
+  check("runAndReportEcommerceAudit sends exactly one message", sentMessages.length === 1);
+  const message = sentMessages[0];
+  check("runAndReportEcommerceAudit relays the correct envelope kind/type", message.kind === "capture.bridge.request" && message.type === "ecommerce.audit.result");
+  check("runAndReportEcommerceAudit's payload carries the page URL and viewport", message.payload.url === "https://example.com/product/widget" && typeof message.payload.viewportWidth === "number");
+
+  const snapshot = JSON.parse(message.payload.snapshotJSON);
+  check(
+    "runAndReportEcommerceAudit's snapshotJSON carries the selector-free detectors",
+    "priceConsistencyCheck" in snapshot && "technologyFingerprint" in snapshot && "croComponentClassification" in snapshot
+  );
+}
+
 console.log(`=== ${failureCount === 0 ? "ALL CHECKS PASSED" : `${failureCount} CHECK(S) FAILED`} ===`);
 process.exit(failureCount === 0 ? 0 : 1);

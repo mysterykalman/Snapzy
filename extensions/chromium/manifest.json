@@ -45,6 +45,9 @@
     },
     "capture-accessibility-audit": {
       "description": "Run accessibility audit (heading outline, landmarks, images, links, forms)"
+    },
+    "capture-ecommerce-audit": {
+      "description": "Run ecommerce audit (technology fingerprint, price consistency, CRO components)"
     }
   },
   "icons": {}

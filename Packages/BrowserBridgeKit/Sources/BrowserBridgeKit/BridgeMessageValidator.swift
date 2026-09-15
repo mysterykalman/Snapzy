@@ -24,6 +24,13 @@ public enum BridgeMessageValidator {
         "version.result": [],
         "status": [],
         "status.result": [],
+        // Phase 3: real inspection message types. Each content script
+        // relays its whole result as one opaque JSON string (`auditJSON`/
+        // `snapshotJSON`) that the app-side mapper (AccessibilityAuditMapper/
+        // EcommerceAuditMapper) decodes, rather than this validator (or the
+        // extension) needing to agree on a fully-typed schema per finding.
+        "accessibility.audit.result": ["url", "auditJSON"],
+        "ecommerce.audit.result": ["url", "snapshotJSON"],
     ]
 
     /// Chrome's own documented Native Messaging limit (1 MiB per message,

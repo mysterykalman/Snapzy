@@ -701,10 +701,52 @@
     };
   }
 
+  /// Assembles the selector-free subset of this file's own detectors --
+  /// technology fingerprint, PDP-vs-visible price consistency, CRO
+  /// component classification -- into one snapshot and relays it to the
+  /// background worker as `ecommerce.audit.result`, exactly the way
+  /// accessibility-audit.js's runAndReportAccessibilityAudit relays
+  /// `accessibility.audit.result`: the whole snapshot travels as one
+  /// opaque JSON string (`snapshotJSON`) that
+  /// Snapzy/Services/Accessibility/EcommerceAuditMapper.swift decodes
+  /// app-side, rather than the extension and the app agreeing on a
+  /// fully-typed IPC schema per detector. plpCardScan/ecommerceImageAudit/
+  /// recommendationsIntelligence need a caller-supplied CSS selector so
+  /// they're deliberately left out of this page-wide, no-input snapshot.
+  function runAndReportEcommerceAudit() {
+    const snapshot = {
+      priceConsistencyCheck: priceConsistencyCheck(),
+      technologyFingerprint: technologyFingerprint(),
+      croComponentClassification: croComponentClassification()
+    };
+    if (typeof chrome === "undefined" || !chrome.runtime || !chrome.runtime.sendMessage) return;
+    const tabSessionId = (globalThis.crypto && globalThis.crypto.randomUUID) ? globalThis.crypto.randomUUID() : `${Date.now()}`;
+    chrome.runtime.sendMessage({
+      kind: "capture.bridge.request",
+      type: "ecommerce.audit.result",
+      tabSessionId,
+      payload: {
+        tabSessionId,
+        url: location.href,
+        snapshotJSON: JSON.stringify(snapshot),
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight
+      }
+    });
+  }
+
+  if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
+    chrome.runtime.onMessage.addListener((message) => {
+      if (message && message.kind === "capture.ecommerce.audit.trigger") {
+        runAndReportEcommerceAudit();
+      }
+    });
+  }
+
   const api = {
     technologyFingerprint, extractStructuredData, extractPDPData, priceConsistencyCheck, plpCardScan, extractBreadcrumbs,
     imageRatioConsistency, croComponentClassification, ecommerceImageAudit, experimentAwareness, shopifyThemeIntelligence,
-    recommendationsIntelligence, cartPriceConsistencyCheck
+    recommendationsIntelligence, cartPriceConsistencyCheck, runAndReportEcommerceAudit
   };
 
   if (typeof module !== "undefined" && module.exports) {

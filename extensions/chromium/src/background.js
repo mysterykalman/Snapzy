@@ -199,4 +199,12 @@ chrome.commands.onCommand.addListener((command) => {
       }
     });
   }
+
+  if (command === "capture-ecommerce-audit") {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0] && tabs[0].id != null) {
+        chrome.tabs.sendMessage(tabs[0].id, { kind: "capture.ecommerce.audit.trigger" });
+      }
+    });
+  }
 });
