@@ -260,6 +260,786 @@
           }
         }
       }
+    },
+    "whats-new.annotation-tools.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Annotation Tools"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Anmerkungswerkzeuge"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuevas herramientas de anotación"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouveaux outils d'annotation"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しい注釈ツール"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "새로운 주석 도구"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новые инструменты аннотирования"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Công cụ chú thích mới"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全新注释工具"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全新註釋工具"
+          }
+        }
+      }
+    },
+    "whats-new.annotation-tools.desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stamp, Measurement, Group/Ungroup, explicit layer ordering, and richer Counter formats are here."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stempel, Messung, Gruppieren/Gruppierung aufheben, explizite Ebenenreihenfolge und erweiterte Zähler-Formate sind da."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sello, Medición, Agrupar/Desagrupar, orden explícito de capas y formatos de contador más completos ya están aquí."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampon, Mesure, Grouper/Dissocier, ordre explicite des calques et formats de compteur enrichis sont arrivés."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スタンプ、測定、グループ化/解除、明示的なレイヤー順序、より豊富なカウンター形式が登場しました。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스탬프, 측정, 그룹화/해제, 명시적 레이어 순서, 더 다양한 카운터 형식이 추가되었습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Штамп, измерение, группировка/разгруппировка, явный порядок слоёв и более широкие форматы счётчика уже здесь."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Con dấu, Đo lường, Nhóm/Bỏ nhóm, thứ tự lớp rõ ràng và định dạng Bộ đếm phong phú hơn đã có mặt."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图章、测量、编组/取消编组、显式图层顺序，以及更丰富的计数器格式都来了。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "圖章、測量、編組/取消編組、明確的圖層順序，以及更豐富的計數器格式都來了。"
+          }
+        }
+      }
+    },
+    "whats-new.stamp.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stamp"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stempel"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sello"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampon"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スタンプ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스탬프"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Штамп"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Con dấu"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图章"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "圖章"
+          }
+        }
+      }
+    },
+    "whats-new.stamp.desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop a check, cross, warning, bug, or CRO marker directly onto a screenshot to flag it at a glance."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setze ein Häkchen, Kreuz, eine Warnung, einen Fehler oder eine CRO-Markierung direkt auf einen Screenshot, um ihn auf einen Blick zu kennzeichnen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coloca una marca, cruz, advertencia, error o marcador CRO directamente en una captura para señalarla de un vistazo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placez une coche, une croix, un avertissement, un bug ou un repère CRO directement sur une capture pour la signaler d'un coup d'œil."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チェック、バツ、警告、バグ、CROマーカーをスクリーンショットに直接配置して一目でフラグを立てられます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "체크, 엑스, 경고, 버그, CRO 마커를 스크린샷에 바로 찍어 한눈에 표시할 수 있습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Разместите отметку, крестик, предупреждение, ошибку или маркер CRO прямо на скриншоте, чтобы отметить его с первого взгляда."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đặt dấu tích, dấu chéo, cảnh báo, lỗi hoặc dấu CRO trực tiếp lên ảnh chụp màn hình để đánh dấu ngay lập tức."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接在截图上放置对勾、叉号、警告、错误或 CRO 标记，一目了然。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接在截圖上放置打勾、叉號、警告、錯誤或 CRO 標記，一目瞭然。"
+          }
+        }
+      }
+    },
+    "whats-new.measurement.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Measurement"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Messung"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Medición"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mesure"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "測定"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "측정"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Измерение"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đo lường"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "测量"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "測量"
+          }
+        }
+      }
+    },
+    "whats-new.measurement.desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A ruler tool with end ticks and a distance label -- drag between two points to measure."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Lineal-Werkzeug mit Endmarkierungen und Entfernungsangabe -- ziehe zwischen zwei Punkten, um zu messen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una herramienta de regla con marcas en los extremos y una etiqueta de distancia: arrastra entre dos puntos para medir."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un outil règle avec des repères aux extrémités et une étiquette de distance -- faites glisser entre deux points pour mesurer."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "端に目盛りと距離ラベルが付いた定規ツール -- 2点間をドラッグして測定します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "끝에 눈금과 거리 라벨이 있는 자 도구입니다 -- 두 지점 사이를 드래그하여 측정하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Инструмент линейки с засечками на концах и меткой расстояния -- перетащите между двумя точками, чтобы измерить."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Công cụ thước kẻ có vạch đầu mút và nhãn khoảng cách -- kéo giữa hai điểm để đo."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "带端点刻度和距离标签的直尺工具——在两点之间拖动即可测量。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "帶端點刻度和距離標籤的直尺工具——在兩點之間拖曳即可測量。"
+          }
+        }
+      }
+    },
+    "whats-new.group-zorder.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Group & Layer Order"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gruppieren & Ebenenreihenfolge"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agrupar y orden de capas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grouper et ordre des calques"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "グループ化とレイヤー順序"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "그룹 및 레이어 순서"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Группировка и порядок слоёв"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhóm & Thứ tự lớp"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "编组与图层顺序"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "編組與圖層順序"
+          }
+        }
+      }
+    },
+    "whats-new.group-zorder.desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select multiple annotations and press ⌘G to group them, or ⌘] / ⌘[ to move one forward or back in the stack."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle mehrere Anmerkungen aus und drücke ⌘G, um sie zu gruppieren, oder ⌘] / ⌘[, um eine im Stapel nach vorne oder hinten zu verschieben."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecciona varias anotaciones y pulsa ⌘G para agruparlas, o ⌘] / ⌘[ para mover una hacia adelante o atrás en la pila."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sélectionnez plusieurs annotations et appuyez sur ⌘G pour les grouper, ou ⌘] / ⌘[ pour en déplacer une vers l'avant ou l'arrière dans la pile."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "複数の注釈を選択して⌘Gを押すとグループ化、⌘]/⌘[で重なり順を前後に移動できます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "여러 주석을 선택하고 ⌘G를 눌러 그룹화하거나, ⌘] / ⌘[로 스택에서 앞뒤로 이동하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выберите несколько аннотаций и нажмите ⌘G, чтобы сгруппировать их, или ⌘] / ⌘[, чтобы переместить одну вперёд или назад в стеке."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn nhiều chú thích và nhấn ⌘G để nhóm chúng lại, hoặc ⌘] / ⌘[ để di chuyển một mục lên trước hoặc ra sau trong chồng lớp."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择多个注释并按 ⌘G 编组，或按 ⌘] / ⌘[ 将某一项在堆叠中前移或后移。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選取多個註釋並按 ⌘G 編組，或按 ⌘] / ⌘[ 將某一項在堆疊中前移或後移。"
+          }
+        }
+      }
+    },
+    "whats-new.counter-formats.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Counter Formats"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zähler-Formate"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Formatos de contador"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Formats de compteur"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カウンター形式"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "카운터 형식"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Форматы счётчика"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Định dạng Bộ đếm"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "计数器格式"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計數器格式"
+          }
+        }
+      }
+    },
+    "whats-new.counter-formats.desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Number your callouts as 1, 2, 3, letters, or Roman numerals, and choose where the count starts."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nummeriere deine Callouts als 1, 2, 3, Buchstaben oder römische Ziffern und lege fest, wo die Zählung beginnt."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Numera tus llamadas como 1, 2, 3, letras o números romanos, y elige dónde empieza el conteo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Numérotez vos rappels en 1, 2, 3, lettres ou chiffres romains, et choisissez où le comptage commence."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コールアウトを1、2、3、文字、ローマ数字のいずれかで番号付けし、開始番号も選べます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "콜아웃 번호를 1, 2, 3, 문자 또는 로마 숫자로 매기고 시작 값을 선택하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нумеруйте выноски как 1, 2, 3, буквами или римскими цифрами и выбирайте, с чего начинать отсчёт."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đánh số chú thích của bạn bằng 1, 2, 3, chữ cái hoặc số La Mã, và chọn nơi bắt đầu đếm."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将标注编号为 1、2、3、字母或罗马数字，并可选择起始编号。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將標註編號為 1、2、3、字母或羅馬數字，並可選擇起始編號。"
+          }
+        }
+      }
+    },
+    "whats-new.copy-as.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy As"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopieren als"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copiar como"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copier en tant que"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コピー形式"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다른 형식으로 복사"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Копировать как"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sao chép dưới dạng"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "复制为"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "複製為"
+          }
+        }
+      }
+    },
+    "whats-new.copy-as.desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Right-click any capture in History to copy it as a Markdown image or HTML <img> tag."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Klicke mit der rechten Maustaste auf eine Aufnahme im Verlauf, um sie als Markdown-Bild oder HTML-<img>-Tag zu kopieren."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haz clic derecho en cualquier captura del historial para copiarla como imagen Markdown o etiqueta HTML <img>."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faites un clic droit sur une capture dans l'historique pour la copier en tant qu'image Markdown ou balise HTML <img>."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "履歴内のキャプチャを右クリックすると、Markdown画像またはHTMLの<img>タグとしてコピーできます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록에서 캡처를 마우스 오른쪽 버튼으로 클릭하여 Markdown 이미지 또는 HTML <img> 태그로 복사하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Щёлкните правой кнопкой мыши на любом снимке в истории, чтобы скопировать его как изображение Markdown или тег HTML <img>."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhấp chuột phải vào bất kỳ ảnh chụp nào trong Lịch sử để sao chép dưới dạng ảnh Markdown hoặc thẻ HTML <img>."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在历史记录中右键点击任意截图，即可复制为 Markdown 图片或 HTML <img> 标签。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在歷史記錄中右鍵點擊任意截圖，即可複製為 Markdown 圖片或 HTML <img> 標籤。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

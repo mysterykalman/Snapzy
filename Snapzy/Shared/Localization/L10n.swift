@@ -9450,5 +9450,66 @@ nonisolated enum L10n {
       defaultValue: "Snapzy is now officially registered with the Apple Developer Program and certified by Apple, bypassing Gatekeeper's protections for a secure launch.",
       comment: "Notarization feature description"
     )
+
+    static let annotationToolsTitle = string(
+      "whats-new.annotation-tools.title",
+      defaultValue: "New Annotation Tools",
+      comment: "What's New screen title introducing a batch of new annotation tools"
+    )
+    static let annotationToolsDesc = string(
+      "whats-new.annotation-tools.desc",
+      defaultValue: "Stamp, Measurement, Group/Ungroup, explicit layer ordering, and richer Counter formats are here.",
+      comment: "What's New screen description introducing a batch of new annotation tools"
+    )
+    static let stampTitle = string(
+      "whats-new.stamp.title",
+      defaultValue: "Stamp",
+      comment: "What's New screen title for the Stamp annotation tool"
+    )
+    static let stampDesc = string(
+      "whats-new.stamp.desc",
+      defaultValue: "Drop a check, cross, warning, bug, or CRO marker directly onto a screenshot to flag it at a glance.",
+      comment: "What's New screen description for the Stamp annotation tool"
+    )
+    static let measurementTitle = string(
+      "whats-new.measurement.title",
+      defaultValue: "Measurement",
+      comment: "What's New screen title for the Measurement annotation tool"
+    )
+    static let measurementDesc = string(
+      "whats-new.measurement.desc",
+      defaultValue: "A ruler tool with end ticks and a distance label -- drag between two points to measure.",
+      comment: "What's New screen description for the Measurement annotation tool"
+    )
+    static let groupZOrderTitle = string(
+      "whats-new.group-zorder.title",
+      defaultValue: "Group & Layer Order",
+      comment: "What's New screen title for annotation grouping and z-order"
+    )
+    static let groupZOrderDesc = string(
+      "whats-new.group-zorder.desc",
+      defaultValue: "Select multiple annotations and press ⌘G to group them, or ⌘] / ⌘[ to move one forward or back in the stack.",
+      comment: "What's New screen description for annotation grouping and z-order"
+    )
+    static let counterFormatsTitle = string(
+      "whats-new.counter-formats.title",
+      defaultValue: "Counter Formats",
+      comment: "What's New screen title for Counter numbering formats"
+    )
+    static let counterFormatsDesc = string(
+      "whats-new.counter-formats.desc",
+      defaultValue: "Number your callouts as 1, 2, 3, letters, or Roman numerals, and choose where the count starts.",
+      comment: "What's New screen description for Counter numbering formats"
+    )
+    static let copyAsTitle = string(
+      "whats-new.copy-as.title",
+      defaultValue: "Copy As",
+      comment: "What's New screen title for the History Copy As feature"
+    )
+    static let copyAsDesc = string(
+      "whats-new.copy-as.desc",
+      defaultValue: "Right-click any capture in History to copy it as a Markdown image or HTML <img> tag.",
+      comment: "What's New screen description for the History Copy As feature"
+    )
   }
 }

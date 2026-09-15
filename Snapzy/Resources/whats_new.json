@@ -1,6 +1,49 @@
 {
   "campaigns": [
     {
+      "id": "annotation_tools_v1_32",
+      "isEnabled": true,
+      "menuTitle": "What's New: Annotation Tools",
+      "screens": [
+        {
+          "id": "annotation_tools_intro",
+          "title": "whats-new.annotation-tools.title",
+          "description": "whats-new.annotation-tools.desc",
+          "systemImage": "sparkles"
+        },
+        {
+          "id": "stamp",
+          "title": "whats-new.stamp.title",
+          "description": "whats-new.stamp.desc",
+          "systemImage": "checkmark.seal"
+        },
+        {
+          "id": "measurement",
+          "title": "whats-new.measurement.title",
+          "description": "whats-new.measurement.desc",
+          "systemImage": "ruler"
+        },
+        {
+          "id": "group_zorder",
+          "title": "whats-new.group-zorder.title",
+          "description": "whats-new.group-zorder.desc",
+          "systemImage": "square.stack"
+        },
+        {
+          "id": "counter_formats",
+          "title": "whats-new.counter-formats.title",
+          "description": "whats-new.counter-formats.desc",
+          "systemImage": "list.number"
+        },
+        {
+          "id": "copy_as",
+          "title": "whats-new.copy-as.title",
+          "description": "whats-new.copy-as.desc",
+          "systemImage": "doc.on.clipboard"
+        }
+      ]
+    },
+    {
       "id": "apple_notarization_v18",
       "isEnabled": true,
       "menuTitle": "What's New: Apple Notarization",
