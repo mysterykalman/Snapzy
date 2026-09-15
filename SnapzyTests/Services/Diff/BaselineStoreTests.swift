@@ -6,6 +6,23 @@
 //  DatabaseManager.openDatabase(at:), which runs the full migrator
 //  including the baseline/baselineComparison tables) -- not a mock.
 //
+//  HISTORICAL NOTE: these tests originally crashed the CI runner's
+//  hosted test process deterministically. Root-caused via real
+//  symbolicated .ips crash reports (captured by a temporary CI
+//  diagnostic workflow, since this environment has no local
+//  Xcode/lldb) to the exact same Swift runtime bug already fixed once
+//  this session for BrowserBridgeCoordinator: with this project's
+//  SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor build setting, a class
+//  with no explicit deinit gets a compiler-synthesized isolated
+//  deinit, and swift_task_deinitOnExecutorMainActorBackDeploy
+//  corrupts the heap when a *transient* (non-singleton) instance is
+//  deallocated. setUpWithError() below creates exactly such a
+//  transient DatabaseManager via openDatabase(at:), which goes out of
+//  scope at the end of the method. Fixed by adding
+//  `nonisolated deinit {}` to DatabaseManager (see DatabaseManager.swift).
+//  Verified fixed via the same diagnostic workflow: all 8 tests now
+//  run to completion with no crash report generated.
+//
 
 import Foundation
 import XCTest
@@ -33,7 +50,10 @@ final class BaselineStoreTests: XCTestCase {
   }
 
   func testSaveAndFetchBaselineRoundTrips() throws {
-    let baseline = Baseline(name: "Homepage hero", sourceCaptureID: UUID(), viewportWidth: 1440, viewportHeight: 900)
+    // A fixed createdAt (rather than the default Date()) avoids a false
+    // failure from GRDB's millisecond-resolution date storage being
+    // unable to round-trip Date()'s sub-millisecond precision exactly.
+    let baseline = Baseline(name: "Homepage hero", createdAt: Date(timeIntervalSince1970: 1_700_000_000), sourceCaptureID: UUID(), viewportWidth: 1440, viewportHeight: 900)
     try store.save(baseline)
 
     let fetched = try store.baseline(id: baseline.id)

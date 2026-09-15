@@ -37,7 +37,6 @@ jobs:
           # headless CGS), so they are skipped in CI and run locally instead.
           SNAPZY_CI_SKIP_TESTS: |
             SnapzyTests/GoogleDriveTests
-            SnapzyTests/DatabaseManagerTests
             SnapzyTests/QuickAccessCoreTests/testQuickAccessCountdownTimer_pauseResumePreservesRemainingTime
             SnapzyTests/QuickAccessCoreTests/testQuickAccessCountdownTimer_cancelPreventsExpiration
             SnapzyTests/QuickAccessCoreTests/testQuickAccessTrackpadSwipeModeStore_persistsMode
