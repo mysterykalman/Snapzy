@@ -37,21 +37,23 @@ final class HistorySearchViewModel: ObservableObject {
       filterSource,
       timeSource
     )
-    .receive(on: DispatchQueue.global(qos: .userInitiated))
-    .map { records, searchText, selectedFilter, selectedTimeFilter in
+    // Stays on Main (unlike the in-memory-substring-scan version this
+    // replaced): `store.search(query:)` is a MainActor-isolated method
+    // (real SQLite FTS5 query -- see CaptureHistoryStore.search),
+    // fast enough not to need a background hop, and calling a
+    // MainActor method from a background queue would be an actor-
+    // isolation violation.
+    .map { [weak store] records, searchText, selectedFilter, selectedTimeFilter -> [CaptureHistoryRecord] in
       let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
       let now = Date()
-      
-      return records.filter { record in
+      let candidates = query.isEmpty ? records : (store?.search(query: query) ?? [])
+
+      return candidates.filter { record in
         let matchesType = selectedFilter == nil || record.captureType == selectedFilter
         let matchesTime = selectedTimeFilter == .all || selectedTimeFilter.includes(record.capturedAt, relativeTo: now)
-        let matchesSearch = query.isEmpty
-          || record.fileName.localizedCaseInsensitiveContains(query)
-          || (record.ocrText?.localizedCaseInsensitiveContains(query) ?? false)
-        return matchesType && matchesTime && matchesSearch
+        return matchesType && matchesTime
       }
     }
-    .receive(on: RunLoop.main)
     .sink { [weak self] filtered in
       self?.filteredRecords = filtered
     }

@@ -644,6 +644,41 @@ final class CaptureHistoryStore: ObservableObject {
     Array(records.prefix(limit))
   }
 
+  /// Full-text search over file name and OCR text via the
+  /// `captureHistoryRecord_fts` FTS5 index (see `DatabaseManager`'s
+  /// `v5_createCaptureHistorySearchIndex` migration) -- the real search
+  /// engine spec §3.13 calls for, rather than an in-memory substring
+  /// scan over every loaded record. Matches every token in `query`
+  /// (FTS5's own tokenizer, not a literal substring), most recent
+  /// first. Returns an empty array for a blank query or an
+  /// unavailable database, rather than throwing -- a caller doing
+  /// live-as-you-type search shouldn't need to special-case those.
+  func search(query: String) -> [CaptureHistoryRecord] {
+    let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmed.isEmpty, let dbPool else { return [] }
+    guard let pattern = FTS5Pattern(matchingAllTokensIn: trimmed) else { return [] }
+
+    do {
+      return try dbPool.read { db in
+        try CaptureHistoryRecord.fetchAll(
+          db,
+          sql: """
+            SELECT captureHistoryRecord.*
+            FROM captureHistoryRecord
+            JOIN captureHistoryRecord_fts ON captureHistoryRecord.rowid = captureHistoryRecord_fts.rowid
+            WHERE captureHistoryRecord_fts MATCH ?
+            ORDER BY captureHistoryRecord.capturedAt DESC
+            """,
+          arguments: [pattern]
+        )
+      }
+    } catch {
+      logger.error("Capture history full-text search failed: \(error.localizedDescription)")
+      DiagnosticLogger.shared.logError(.history, error, "Capture history full-text search failed", context: ["query": trimmed])
+      return []
+    }
+  }
+
   func refreshRecords() {
     guard let dbPool = requireDatabase(for: "refresh capture history records") else { return }
 

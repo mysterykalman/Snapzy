@@ -15,6 +15,11 @@ protocol HistoryStoring: AnyObject {
   var recordsPublisher: AnyPublisher<[CaptureHistoryRecord], Never> { get }
 
   func updateOCRText(id: UUID, text: String?)
+
+  /// Full-text search over file name and OCR text (see
+  /// `CaptureHistoryStore.search(query:)` for the real FTS5-backed
+  /// implementation). Empty/whitespace-only query returns `[]`.
+  func search(query: String) -> [CaptureHistoryRecord]
 }
 
 extension CaptureHistoryStore: HistoryStoring {

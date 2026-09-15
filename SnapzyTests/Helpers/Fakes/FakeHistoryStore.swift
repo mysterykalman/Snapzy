@@ -30,6 +30,20 @@ final class FakeHistoryStore: HistoryStoring {
     }
   }
 
+  /// A plain case-insensitive substring match over fileName/ocrText --
+  /// not FTS5 (there's no real SQLite database here), but the same
+  /// "matches file name or OCR text" contract `CaptureHistoryStore`'s
+  /// real implementation provides, which is all `HistorySearchViewModel`
+  /// tests need to exercise.
+  func search(query: String) -> [CaptureHistoryRecord] {
+    let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmed.isEmpty else { return [] }
+    return records.filter {
+      $0.fileName.localizedCaseInsensitiveContains(trimmed)
+        || ($0.ocrText?.localizedCaseInsensitiveContains(trimmed) ?? false)
+    }
+  }
+
   // A fresh instance is constructed per test and goes out of scope at
   // teardown -- exactly the transient-instance pattern that hits the
   // MainActor isolated-deinit runtime bug documented in

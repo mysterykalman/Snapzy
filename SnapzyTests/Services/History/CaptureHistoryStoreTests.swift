@@ -325,6 +325,54 @@ final class CaptureHistoryStoreTests: XCTestCase {
     XCTAssertEqual(recent.count, 3)
   }
 
+  // MARK: - search (FTS5)
+
+  func testSearch_matchesByFileName() {
+    let record = makeRecord(filePath: testDirectory.appendingPathComponent("invoice-march.png").path)
+    CaptureHistoryStore.shared.add(record)
+    CaptureHistoryStore.shared.refreshRecords()
+
+    let results = CaptureHistoryStore.shared.search(query: "invoice")
+    XCTAssertEqual(results.map(\.id), [record.id])
+  }
+
+  func testSearch_matchesByOCRTextPopulatedAfterInsert() {
+    // Real-world shape: a record is added with no OCR text yet, then
+    // HistoryOCRIndexer fills it in asynchronously via updateOCRText --
+    // this must also update the FTS5 index (an UPDATE, not an INSERT),
+    // exercising GRDB's synchronize() update trigger, not just insert.
+    let record = makeRecord()
+    CaptureHistoryStore.shared.add(record)
+    XCTAssertTrue(CaptureHistoryStore.shared.search(query: "total due").isEmpty)
+
+    CaptureHistoryStore.shared.updateOCRText(id: record.id, text: "Total due: $42.00")
+
+    let results = CaptureHistoryStore.shared.search(query: "total due")
+    XCTAssertEqual(results.map(\.id), [record.id])
+  }
+
+  func testSearch_returnsEmptyForBlankQuery() {
+    CaptureHistoryStore.shared.add(makeRecord())
+    XCTAssertTrue(CaptureHistoryStore.shared.search(query: "   ").isEmpty)
+  }
+
+  func testSearch_excludesNonMatchingRecords() {
+    CaptureHistoryStore.shared.add(makeRecord(filePath: testDirectory.appendingPathComponent("screenshot.png").path))
+    XCTAssertTrue(CaptureHistoryStore.shared.search(query: "nonexistentterm").isEmpty)
+  }
+
+  func testSearch_reflectsFTSSyncAfterRecordDeletion() {
+    // Exercises GRDB's synchronize() delete trigger: a removed record
+    // must not still be findable via the FTS5 index.
+    let record = makeRecord(filePath: testDirectory.appendingPathComponent("deleteme.png").path)
+    CaptureHistoryStore.shared.add(record)
+    XCTAssertEqual(CaptureHistoryStore.shared.search(query: "deleteme").count, 1)
+
+    CaptureHistoryStore.shared.remove(id: record.id)
+
+    XCTAssertTrue(CaptureHistoryStore.shared.search(query: "deleteme").isEmpty)
+  }
+
   // MARK: - Helpers
 
   private func makeRecord(

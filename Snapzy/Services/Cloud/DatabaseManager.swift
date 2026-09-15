@@ -291,6 +291,23 @@ final class DatabaseManager: @unchecked Sendable {
       }
     }
 
+    // Spec (docs/SPEC_DIGEST.md §3.13) calls for a real FTS5 index over
+    // OCR text (and file name); the search that shipped alongside
+    // ocrText above was an in-memory substring scan over every loaded
+    // record, functionally fine at small scale but not the specified
+    // engine and not something that scales. GRDB's `synchronize(withTable:)`
+    // wires up the standard SQLite triggers (insert/update/delete) that
+    // keep this external-content index in lockstep with
+    // captureHistoryRecord automatically -- no manual re-indexing code
+    // needed anywhere records get added/edited/removed.
+    migrator.registerMigration("v5_createCaptureHistorySearchIndex") { db in
+      try db.create(virtualTable: "captureHistoryRecord_fts", using: FTS5()) { t in
+        t.synchronize(withTable: "captureHistoryRecord")
+        t.column("fileName")
+        t.column("ocrText")
+      }
+    }
+
     return migrator
   }
 
