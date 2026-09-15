@@ -187,6 +187,12 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
     let ungroup = try makeKeyEvent(keyCode: 5, characters: "G", flags: [.command, .shift])
     let keyCodeFallbackGroup = try makeKeyEvent(keyCode: 5, characters: "", flags: .command)
     let keyCodeFallbackUngroup = try makeKeyEvent(keyCode: 5, characters: "", flags: [.command, .shift])
+    // Bracket shortcuts are matched by keyCode only (30 = "]", 33 = "["), since
+    // Shift changes the character a bracket key types on a real keyboard.
+    let bringForward = try makeKeyEvent(keyCode: 30, characters: "]", flags: .command)
+    let bringToFront = try makeKeyEvent(keyCode: 30, characters: "}", flags: [.command, .shift])
+    let sendBackward = try makeKeyEvent(keyCode: 33, characters: "[", flags: .command)
+    let sendToBack = try makeKeyEvent(keyCode: 33, characters: "{", flags: [.command, .shift])
 
     XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: copy, isTextInputActive: false), .copy)
     XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: layoutAwareCopy, isTextInputActive: false), .copy)
@@ -200,6 +206,10 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
     XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: ungroup, isTextInputActive: false), .ungroup)
     XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: keyCodeFallbackGroup, isTextInputActive: false), .group)
     XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: keyCodeFallbackUngroup, isTextInputActive: false), .ungroup)
+    XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: bringForward, isTextInputActive: false), .bringForward)
+    XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: bringToFront, isTextInputActive: false), .bringToFront)
+    XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: sendBackward, isTextInputActive: false), .sendBackward)
+    XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: sendToBack, isTextInputActive: false), .sendToBack)
   }
 
   func testAnnotateObjectShortcutsKeepTextAndInputFieldCommandsNative() throws {

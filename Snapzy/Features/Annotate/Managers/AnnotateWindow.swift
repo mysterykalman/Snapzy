@@ -58,6 +58,10 @@ enum AnnotateObjectShortcut: Equatable {
   case duplicate
   case group
   case ungroup
+  case bringToFront
+  case sendToBack
+  case bringForward
+  case sendBackward
 }
 
 /// Custom NSWindow for annotation editing with dark mode appearance
@@ -144,9 +148,21 @@ class AnnotateWindow: NSWindow {
     let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
     guard flags.contains(.command), !flags.contains(.control), !flags.contains(.option) else { return nil }
 
-    // Cmd+Shift+G (Ungroup) is the only combination here that carries Shift;
+    let hasShift = flags.contains(.shift)
+
+    // Bracket keys are matched by keyCode only: Shift changes the character a
+    // bracket key types (e.g. "]" becomes "}"), and that shift-produced
+    // character isn't a reliable cross-layout signal the way a plain letter's
+    // case is, so keyCode is the only signal used here for these two.
+    switch event.keyCode {
+    case 30: return hasShift ? .bringToFront : .bringForward // "]"
+    case 33: return hasShift ? .sendToBack : .sendBackward // "["
+    default: break
+    }
+
+    // Cmd+Shift+G (Ungroup) is the only lettered shortcut that carries Shift;
     // every other shortcut in this function is plain Cmd+<key>.
-    if flags.contains(.shift) {
+    if hasShift {
       if let characters = event.charactersIgnoringModifiers?.lowercased(), characters == "g" {
         return .ungroup
       }
@@ -268,6 +284,18 @@ class AnnotateWindow: NSWindow {
         return true
       case .ungroup:
         interactionState?.ungroupSelectedAnnotations()
+        return true
+      case .bringToFront:
+        interactionState?.bringSelectedAnnotationsToFront()
+        return true
+      case .sendToBack:
+        interactionState?.sendSelectedAnnotationsToBack()
+        return true
+      case .bringForward:
+        interactionState?.moveSelectedAnnotationForward()
+        return true
+      case .sendBackward:
+        interactionState?.moveSelectedAnnotationBackward()
         return true
       }
     }

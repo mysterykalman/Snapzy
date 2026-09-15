@@ -98,6 +98,12 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 - Duplicating or pasting a grouped annotation produces an ungrouped copy (pre-existing behavior of the duplication/paste path, not overridden for groups) — regroup manually if needed.
 - Rubber-band (marquee) selection does not auto-expand to full groups; it only includes whatever the marquee actually intersects.
 
+## Explicit Z-Order
+
+- `⌘]` / `⌘[` move the single selected annotation one step forward/backward in render order; restricted to exactly one selected item, since stepping several items by one position each has no single well-defined relative-order result.
+- `⌘⇧]` / `⌘⇧[` bring the current selection (any size) to the very front/back, preserving the selected items' relative order to each other.
+- All four operate on the underlying `annotations` array order, which `AnnotationItem.renderOrdered` already groups into three fixed tiers (embedded images beneath blurs beneath markup shapes/text/etc., "always on top"). Reordering only changes relative stacking *within* a tier -- a shape can never be moved behind a blur or embedded image via z-order, matching how the renderer already worked.
+
 ## Undo/Redo
 
 - `UndoEntry` = `.annotations(AnnotationSnapshot)` | `.rotation(RotationSnapshot)` — rotation undo never disturbs the annotation path.

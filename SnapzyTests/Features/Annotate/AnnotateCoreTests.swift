@@ -1064,6 +1064,98 @@ final class AnnotateCoreTests: XCTestCase {
     XCTAssertNil(state.annotations[0].groupId)
   }
 
+  // MARK: - Explicit z-order
+
+  private func makeZOrderState() -> (AnnotateState, [AnnotationItem]) {
+    let state = makeAnnotateState()
+    let items = (0 ..< 3).map { i in
+      AnnotationItem(type: .rectangle, bounds: CGRect(x: CGFloat(i) * 10, y: 0, width: 10, height: 10), properties: AnnotationProperties())
+    }
+    state.annotations = items
+    return (state, items)
+  }
+
+  @MainActor
+  func testBringSelectedAnnotationsToFront_movesSelectionToTheEndPreservingRelativeOrder() {
+    let (state, items) = makeZOrderState()
+    state.setSelectedAnnotationIds([items[0].id, items[1].id])
+
+    XCTAssertTrue(state.bringSelectedAnnotationsToFront())
+
+    XCTAssertEqual(state.annotations.map(\.id), [items[2].id, items[0].id, items[1].id])
+  }
+
+  @MainActor
+  func testSendSelectedAnnotationsToBack_movesSelectionToTheStartPreservingRelativeOrder() {
+    let (state, items) = makeZOrderState()
+    state.setSelectedAnnotationIds([items[1].id, items[2].id])
+
+    XCTAssertTrue(state.sendSelectedAnnotationsToBack())
+
+    XCTAssertEqual(state.annotations.map(\.id), [items[1].id, items[2].id, items[0].id])
+  }
+
+  @MainActor
+  func testMoveSelectedAnnotationForward_swapsWithTheNextItem() {
+    let (state, items) = makeZOrderState()
+    state.setSelectedAnnotationIds([items[0].id])
+
+    XCTAssertTrue(state.moveSelectedAnnotationForward())
+
+    XCTAssertEqual(state.annotations.map(\.id), [items[1].id, items[0].id, items[2].id])
+  }
+
+  @MainActor
+  func testMoveSelectedAnnotationForward_atFrontmostIndexReturnsFalse() {
+    let (state, items) = makeZOrderState()
+    state.setSelectedAnnotationIds([items[2].id])
+
+    XCTAssertFalse(state.moveSelectedAnnotationForward())
+    XCTAssertEqual(state.annotations.map(\.id), items.map(\.id))
+  }
+
+  @MainActor
+  func testMoveSelectedAnnotationBackward_swapsWithThePreviousItem() {
+    let (state, items) = makeZOrderState()
+    state.setSelectedAnnotationIds([items[2].id])
+
+    XCTAssertTrue(state.moveSelectedAnnotationBackward())
+
+    XCTAssertEqual(state.annotations.map(\.id), [items[0].id, items[2].id, items[1].id])
+  }
+
+  @MainActor
+  func testMoveSelectedAnnotationBackward_atBackmostIndexReturnsFalse() {
+    let (state, items) = makeZOrderState()
+    state.setSelectedAnnotationIds([items[0].id])
+
+    XCTAssertFalse(state.moveSelectedAnnotationBackward())
+    XCTAssertEqual(state.annotations.map(\.id), items.map(\.id))
+  }
+
+  @MainActor
+  func testMoveSelectedAnnotationForward_withMultiSelectionReturnsFalse() {
+    let (state, items) = makeZOrderState()
+    state.setSelectedAnnotationIds([items[0].id, items[1].id])
+
+    XCTAssertFalse(
+      state.moveSelectedAnnotationForward(),
+      "Stepping a multi-selection by one position each has no single well-defined result."
+    )
+  }
+
+  @MainActor
+  func testBringSelectedAnnotationsToFront_isUndoable() {
+    let (state, items) = makeZOrderState()
+    state.setSelectedAnnotationIds([items[0].id])
+
+    state.bringSelectedAnnotationsToFront()
+    XCTAssertEqual(state.annotations.last?.id, items[0].id)
+
+    state.undo()
+    XCTAssertEqual(state.annotations.map(\.id), items.map(\.id))
+  }
+
   @MainActor
   func testQuickPropertiesSupportsCounterStartValue_hiddenWhenACounterIsSelected() {
     let state = makeAnnotateState()

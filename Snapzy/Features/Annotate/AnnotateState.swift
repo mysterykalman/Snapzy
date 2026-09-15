@@ -3521,6 +3521,70 @@ final class AnnotateState: ObservableObject {
     return true
   }
 
+  /// Moves the current selection to the end of `annotations` (rendered on
+  /// top of everything else), preserving the selected items' relative order.
+  @discardableResult
+  func bringSelectedAnnotationsToFront() -> Bool {
+    guard editingTextAnnotationId == nil, !selectedAnnotationIds.isEmpty else { return false }
+    let ids = selectedAnnotationIds
+    let selected = annotations.filter { ids.contains($0.id) }
+    guard !selected.isEmpty else { return false }
+
+    saveState()
+    annotations.removeAll { ids.contains($0.id) }
+    annotations.append(contentsOf: selected)
+    hasUnsavedChanges = true
+    return true
+  }
+
+  /// Moves the current selection to the start of `annotations` (rendered
+  /// beneath everything else), preserving the selected items' relative order.
+  @discardableResult
+  func sendSelectedAnnotationsToBack() -> Bool {
+    guard editingTextAnnotationId == nil, !selectedAnnotationIds.isEmpty else { return false }
+    let ids = selectedAnnotationIds
+    let selected = annotations.filter { ids.contains($0.id) }
+    guard !selected.isEmpty else { return false }
+
+    saveState()
+    annotations.removeAll { ids.contains($0.id) }
+    annotations.insert(contentsOf: selected, at: 0)
+    hasUnsavedChanges = true
+    return true
+  }
+
+  /// Swaps the single selected annotation one step later in render order.
+  /// Restricted to a single selection: stepping a multi-selection by one
+  /// position each has no single well-defined relative-order result.
+  @discardableResult
+  func moveSelectedAnnotationForward() -> Bool {
+    guard editingTextAnnotationId == nil,
+          selectedAnnotationIds.count == 1,
+          let id = selectedAnnotationIds.first,
+          let index = annotations.firstIndex(where: { $0.id == id }),
+          index < annotations.count - 1 else { return false }
+
+    saveState()
+    annotations.swapAt(index, index + 1)
+    hasUnsavedChanges = true
+    return true
+  }
+
+  /// Swaps the single selected annotation one step earlier in render order.
+  @discardableResult
+  func moveSelectedAnnotationBackward() -> Bool {
+    guard editingTextAnnotationId == nil,
+          selectedAnnotationIds.count == 1,
+          let id = selectedAnnotationIds.first,
+          let index = annotations.firstIndex(where: { $0.id == id }),
+          index > 0 else { return false }
+
+    saveState()
+    annotations.swapAt(index, index - 1)
+    hasUnsavedChanges = true
+    return true
+  }
+
   @discardableResult
   func selectAnnotations(in rect: CGRect) -> [AnnotationItem] {
     let selectionRect = rect.standardized
