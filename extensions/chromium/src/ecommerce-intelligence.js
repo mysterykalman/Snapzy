@@ -717,7 +717,8 @@
     const snapshot = {
       priceConsistencyCheck: priceConsistencyCheck(),
       technologyFingerprint: technologyFingerprint(),
-      croComponentClassification: croComponentClassification()
+      croComponentClassification: croComponentClassification(),
+      shopifyThemeIntelligence: shopifyThemeIntelligence()
     };
     if (typeof chrome === "undefined" || !chrome.runtime || !chrome.runtime.sendMessage) return;
     const tabSessionId = (globalThis.crypto && globalThis.crypto.randomUUID) ? globalThis.crypto.randomUUID() : `${Date.now()}`;

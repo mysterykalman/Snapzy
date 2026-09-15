@@ -94,6 +94,26 @@ final class EcommerceAuditMapperTests: XCTestCase {
     XCTAssertTrue(result.findings.isEmpty)
     XCTAssertTrue(result.technologyDetections.isEmpty)
     XCTAssertTrue(result.componentDetections.isEmpty)
+    XCTAssertNil(result.shopifyTheme)
+  }
+
+  func testShopifyThemeIntelligencePassesThroughWithoutBecomingAFinding() throws {
+    let json = """
+      {
+        "shopifyThemeIntelligence": {
+          "themeName": "Dawn", "themeId": 123, "themeStoreId": 796,
+          "templateType": "product", "sectionIds": ["header", "main-product"], "appBlockIds": ["block-1"]
+        }
+      }
+      """
+    let result = try EcommerceAuditMapper.map(fromSnapshotJSON: json, page: "https://example.com", viewportWidth: nil, viewportHeight: nil)
+
+    XCTAssertTrue(result.findings.isEmpty, "theme intelligence alone is not a finding")
+    let theme = try XCTUnwrap(result.shopifyTheme)
+    XCTAssertEqual(theme.themeName, "Dawn")
+    XCTAssertEqual(theme.themeId, 123)
+    XCTAssertEqual(theme.templateType, "product")
+    XCTAssertEqual(theme.sectionIds, ["header", "main-product"])
   }
 
   func testInvalidJSONThrows() {

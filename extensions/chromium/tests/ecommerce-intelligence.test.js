@@ -536,6 +536,7 @@ function load(html, windowSetup) {
   check(
     "runAndReportEcommerceAudit's snapshotJSON carries the selector-free detectors",
     "priceConsistencyCheck" in snapshot && "technologyFingerprint" in snapshot && "croComponentClassification" in snapshot
+      && "shopifyThemeIntelligence" in snapshot
   );
 }
 

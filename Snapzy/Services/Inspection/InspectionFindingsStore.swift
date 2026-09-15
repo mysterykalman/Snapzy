@@ -22,6 +22,7 @@ final class InspectionFindingsStore: ObservableObject {
   @Published private(set) var findings: [AuditFinding] = []
   @Published private(set) var technologyDetections: [EcommerceAuditMapper.RawTechnologyDetection] = []
   @Published private(set) var componentDetections: [EcommerceAuditMapper.RawCROComponentDetection] = []
+  @Published private(set) var shopifyTheme: EcommerceAuditMapper.RawShopifyThemeIntelligence?
 
   private init() {}
 
@@ -51,6 +52,9 @@ final class InspectionFindingsStore: ObservableObject {
     findings.append(contentsOf: result.findings)
     technologyDetections.append(contentsOf: result.technologyDetections)
     componentDetections.append(contentsOf: result.componentDetections)
+    if let shopifyTheme = result.shopifyTheme {
+      self.shopifyTheme = shopifyTheme
+    }
     return result.findings
   }
 
@@ -58,5 +62,6 @@ final class InspectionFindingsStore: ObservableObject {
     findings.removeAll()
     technologyDetections.removeAll()
     componentDetections.removeAll()
+    shopifyTheme = nil
   }
 }

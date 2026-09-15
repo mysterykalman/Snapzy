@@ -56,11 +56,21 @@ enum EcommerceAuditMapper {
     var selector: String
   }
 
+  struct RawShopifyThemeIntelligence: Decodable {
+    var themeName: String?
+    var themeId: Int?
+    var themeStoreId: Int?
+    var templateType: String?
+    var sectionIds: [String]
+    var appBlockIds: [String]
+  }
+
   struct RawEcommerceSnapshot: Decodable {
     var priceConsistencyCheck: RawPriceConsistency?
     var cartPriceConsistencyCheck: RawCartPriceConsistency?
     var technologyFingerprint: [RawTechnologyDetection]?
     var croComponentClassification: [RawCROComponentDetection]?
+    var shopifyThemeIntelligence: RawShopifyThemeIntelligence?
   }
 
   enum MapError: Error, LocalizedError {
@@ -72,6 +82,7 @@ enum EcommerceAuditMapper {
     var findings: [AuditFinding]
     var technologyDetections: [RawTechnologyDetection]
     var componentDetections: [RawCROComponentDetection]
+    var shopifyTheme: RawShopifyThemeIntelligence?
   }
 
   /// Maps genuinely actionable results (a real PDP-vs-visible or
@@ -110,7 +121,8 @@ enum EcommerceAuditMapper {
     return Result(
       findings: findings,
       technologyDetections: raw.technologyFingerprint ?? [],
-      componentDetections: raw.croComponentClassification ?? []
+      componentDetections: raw.croComponentClassification ?? [],
+      shopifyTheme: raw.shopifyThemeIntelligence
     )
   }
 

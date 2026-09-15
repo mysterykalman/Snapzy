@@ -21,11 +21,16 @@ struct InspectionResultsView: View {
       .map { ($0, grouped[$0] ?? []) }
   }
 
+  private var hasAnyResults: Bool {
+    !store.findings.isEmpty || !store.technologyDetections.isEmpty
+      || !store.componentDetections.isEmpty || store.shopifyTheme != nil
+  }
+
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
       header
       Divider()
-      if store.findings.isEmpty && store.technologyDetections.isEmpty {
+      if !hasAnyResults {
         emptyState
       } else {
         List {
@@ -57,6 +62,21 @@ struct InspectionResultsView: View {
               }
             }
           }
+          if let shopifyTheme = store.shopifyTheme {
+            Section("Shopify Theme") {
+              if let name = shopifyTheme.themeName {
+                Text("Theme: \(name)").font(.callout)
+              }
+              if let templateType = shopifyTheme.templateType {
+                Text("Template: \(templateType)").font(.callout)
+              }
+              if !shopifyTheme.sectionIds.isEmpty {
+                Text("Sections: \(shopifyTheme.sectionIds.joined(separator: ", "))")
+                  .font(.caption2)
+                  .foregroundStyle(.tertiary)
+              }
+            }
+          }
         }
         .listStyle(.inset)
       }
@@ -83,7 +103,7 @@ struct InspectionResultsView: View {
       Button("Clear") {
         store.clear()
       }
-      .disabled(store.findings.isEmpty && store.technologyDetections.isEmpty)
+      .disabled(!hasAnyResults)
     }
     .padding()
   }
