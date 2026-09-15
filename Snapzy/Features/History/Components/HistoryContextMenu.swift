@@ -24,6 +24,12 @@ struct HistoryContextMenu: View {
       HistoryWindowController.shared.openItem(record)
     }
 
+    if record.captureType != .video {
+      Button("Add to Capture Tray") {
+        CaptureTrayStore.shared.add(record.fileURL)
+      }
+    }
+
     if CloudManager.shared.isConfigured {
       Button {
         manager.uploadToCloud(record)

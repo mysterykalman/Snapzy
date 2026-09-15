@@ -36,6 +36,7 @@ final class SnapzyDeepLinkHandlerTests: XCTestCase {
       ("snapzy://inspect/results", .openInspectionResults),
       ("snapzy://capture/delayed", .delayedCapture(seconds: nil)),
       ("snapzy://command-palette", .toggleCommandPalette),
+      ("snapzy://open/capture-tray", .openCaptureTray),
     ]
 
     for (urlString, expectedAction) in cases {
@@ -94,6 +95,14 @@ final class SnapzyDeepLinkHandlerTests: XCTestCase {
     for urlString in aliases {
       let url = try XCTUnwrap(URL(string: urlString))
       XCTAssertEqual(SnapzyDeepLinkAction(url: url), .toggleCommandPalette, urlString)
+    }
+  }
+
+  func testCaptureTrayAliasesParseExpectedAction() throws {
+    let aliases = ["snapzy://capture-tray", "snapzy://capture/tray"]
+    for urlString in aliases {
+      let url = try XCTUnwrap(URL(string: urlString))
+      XCTAssertEqual(SnapzyDeepLinkAction(url: url), .openCaptureTray, urlString)
     }
   }
 

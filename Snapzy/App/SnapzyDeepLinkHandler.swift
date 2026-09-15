@@ -126,6 +126,8 @@ struct SnapzyDeepLinkHandler {
       }
     case .toggleCommandPalette:
       CommandPaletteWindowController.shared.toggle(deepLinkHandler: self)
+    case .openCaptureTray:
+      CaptureTrayWindowController.shared.showWindow()
     }
   }
 }
@@ -156,6 +158,7 @@ enum SnapzyDeepLinkAction: Equatable {
   case openInspectionResults
   case delayedCapture(seconds: Int?)
   case toggleCommandPalette
+  case openCaptureTray
 
   init?(url: URL) {
     guard url.scheme?.lowercased() == "snapzy" else { return nil }
@@ -218,6 +221,8 @@ enum SnapzyDeepLinkAction: Equatable {
       self = .delayedCapture(seconds: Self.delaySeconds(from: components))
     case "command-palette", "commands", "show/command-palette":
       self = .toggleCommandPalette
+    case "open/capture-tray", "capture-tray", "capture/tray":
+      self = .openCaptureTray
     case let value where value.hasPrefix("settings/"):
       self = .openSettings(Self.preferencesTab(from: components, pathParts: pathParts))
     case let value where value.hasPrefix("preferences/"):
@@ -254,6 +259,7 @@ enum SnapzyDeepLinkAction: Equatable {
     case .openInspectionResults: return "openInspectionResults"
     case .delayedCapture(let seconds): return "delayedCapture(\(seconds.map(String.init) ?? "default"))"
     case .toggleCommandPalette: return "toggleCommandPalette"
+    case .openCaptureTray: return "openCaptureTray"
     }
   }
 

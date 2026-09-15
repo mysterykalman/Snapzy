@@ -39,6 +39,7 @@ struct CommandPaletteAction: Identifiable {
     CommandPaletteAction(id: "openCombine", title: "Combine Images\u{2026}", systemImage: "square.on.square", action: .openCombine([])),
     CommandPaletteAction(id: "openVideoEditor", title: "Open Video Editor", systemImage: "film", action: .openVideoEditor),
     CommandPaletteAction(id: "openHistory", title: "Open History", systemImage: "clock.arrow.circlepath", action: .openHistory),
+    CommandPaletteAction(id: "openCaptureTray", title: "Open Capture Tray", systemImage: "tray.full", action: .openCaptureTray),
     CommandPaletteAction(id: "openCloudUploads", title: "Open Cloud Uploads", systemImage: "icloud", action: .openCloudUploads),
     CommandPaletteAction(id: "openInspectionResults", title: "Open Inspection Results", systemImage: "list.bullet.clipboard", action: .openInspectionResults),
     CommandPaletteAction(id: "colorLoupe", title: "Color Picker", systemImage: "eyedropper", action: .colorLoupe),
