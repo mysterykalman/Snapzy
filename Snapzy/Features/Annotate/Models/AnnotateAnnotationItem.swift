@@ -1219,12 +1219,17 @@ struct AnnotationItem: Identifiable, Equatable {
   var type: AnnotationType
   var bounds: CGRect
   var properties: AnnotationProperties
+  /// Shared by every member of a user-created group (via Group/Ungroup); `nil`
+  /// for an ungrouped annotation. Selecting or moving one grouped member acts
+  /// on every annotation sharing the same id.
+  var groupId: UUID?
 
-  init(id: UUID = UUID(), type: AnnotationType, bounds: CGRect, properties: AnnotationProperties) {
+  init(id: UUID = UUID(), type: AnnotationType, bounds: CGRect, properties: AnnotationProperties, groupId: UUID? = nil) {
     self.id = id
     self.type = type
     self.bounds = bounds
     self.properties = properties
+    self.groupId = groupId
   }
 
   static func == (lhs: AnnotationItem, rhs: AnnotationItem) -> Bool {

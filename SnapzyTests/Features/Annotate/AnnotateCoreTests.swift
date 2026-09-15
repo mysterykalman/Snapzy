@@ -977,6 +977,93 @@ final class AnnotateCoreTests: XCTestCase {
     )
   }
 
+  // MARK: - Group / Ungroup
+
+  @MainActor
+  func testGroupSelectedAnnotations_requiresAtLeastTwoSelected() {
+    let state = makeAnnotateState()
+    let a = AnnotationItem(type: .rectangle, bounds: CGRect(x: 0, y: 0, width: 10, height: 10), properties: AnnotationProperties())
+    state.annotations = [a]
+    state.setSelectedAnnotationIds([a.id])
+
+    XCTAssertFalse(state.groupSelectedAnnotations())
+    XCTAssertNil(state.annotations[0].groupId)
+  }
+
+  @MainActor
+  func testGroupSelectedAnnotations_assignsASharedGroupIdToOnlyTheSelection() {
+    let state = makeAnnotateState()
+    let a = AnnotationItem(type: .rectangle, bounds: CGRect(x: 0, y: 0, width: 10, height: 10), properties: AnnotationProperties())
+    let b = AnnotationItem(type: .oval, bounds: CGRect(x: 20, y: 20, width: 10, height: 10), properties: AnnotationProperties())
+    let outsider = AnnotationItem(type: .oval, bounds: CGRect(x: 40, y: 40, width: 10, height: 10), properties: AnnotationProperties())
+    state.annotations = [a, b, outsider]
+    state.setSelectedAnnotationIds([a.id, b.id])
+
+    XCTAssertTrue(state.groupSelectedAnnotations())
+
+    let groupIds = Set(state.annotations.filter { $0.id == a.id || $0.id == b.id }.compactMap(\.groupId))
+    XCTAssertEqual(groupIds.count, 1, "Both grouped members should share exactly one group id.")
+    XCTAssertNil(state.annotations.first { $0.id == outsider.id }?.groupId)
+  }
+
+  @MainActor
+  func testUngroupSelectedAnnotations_clearsGroupIdForEveryMemberEvenIfOnlyOneIsSelected() {
+    let state = makeAnnotateState()
+    var a = AnnotationItem(type: .rectangle, bounds: CGRect(x: 0, y: 0, width: 10, height: 10), properties: AnnotationProperties())
+    var b = AnnotationItem(type: .oval, bounds: CGRect(x: 20, y: 20, width: 10, height: 10), properties: AnnotationProperties())
+    let sharedGroupId = UUID()
+    a.groupId = sharedGroupId
+    b.groupId = sharedGroupId
+    state.annotations = [a, b]
+    state.setSelectedAnnotationIds([a.id])
+
+    XCTAssertTrue(state.ungroupSelectedAnnotations())
+
+    XCTAssertNil(state.annotations[0].groupId)
+    XCTAssertNil(state.annotations[1].groupId)
+  }
+
+  @MainActor
+  func testUngroupSelectedAnnotations_returnsFalseWhenSelectionHasNoGroup() {
+    let state = makeAnnotateState()
+    let a = AnnotationItem(type: .rectangle, bounds: CGRect(x: 0, y: 0, width: 10, height: 10), properties: AnnotationProperties())
+    state.annotations = [a]
+    state.setSelectedAnnotationIds([a.id])
+
+    XCTAssertFalse(state.ungroupSelectedAnnotations())
+  }
+
+  @MainActor
+  func testSelectAnnotation_atAGroupedMember_selectsEveryMemberOfTheGroup() {
+    let state = makeAnnotateState()
+    let sharedGroupId = UUID()
+    var a = AnnotationItem(type: .rectangle, bounds: CGRect(x: 0, y: 0, width: 40, height: 40), properties: AnnotationProperties())
+    var b = AnnotationItem(type: .oval, bounds: CGRect(x: 100, y: 100, width: 40, height: 40), properties: AnnotationProperties())
+    a.groupId = sharedGroupId
+    b.groupId = sharedGroupId
+    state.annotations = [a, b]
+
+    let hit = state.selectAnnotation(at: CGPoint(x: 20, y: 20))
+
+    XCTAssertEqual(hit?.id, a.id)
+    XCTAssertEqual(state.selectedAnnotationIds, Set([a.id, b.id]))
+  }
+
+  @MainActor
+  func testGroupSelectedAnnotations_isUndoable() {
+    let state = makeAnnotateState()
+    let a = AnnotationItem(type: .rectangle, bounds: CGRect(x: 0, y: 0, width: 10, height: 10), properties: AnnotationProperties())
+    let b = AnnotationItem(type: .oval, bounds: CGRect(x: 20, y: 20, width: 10, height: 10), properties: AnnotationProperties())
+    state.annotations = [a, b]
+    state.setSelectedAnnotationIds([a.id, b.id])
+
+    state.groupSelectedAnnotations()
+    XCTAssertNotNil(state.annotations[0].groupId)
+
+    state.undo()
+    XCTAssertNil(state.annotations[0].groupId)
+  }
+
   @MainActor
   func testQuickPropertiesSupportsCounterStartValue_hiddenWhenACounterIsSelected() {
     let state = makeAnnotateState()
@@ -1207,6 +1294,37 @@ final class AnnotateCoreTests: XCTestCase {
       state.annotations[0].bounds,
       CGRect(x: 230, y: 160, width: 80, height: 80)
     )
+  }
+
+  @MainActor
+  func testCanvasSelectionToolDraggingOneGroupedAnnotationMovesTheWholeGroup() throws {
+    let state = makeAnnotateState()
+    let sharedGroupId = UUID()
+    var a = AnnotationItem(type: .rectangle, bounds: CGRect(x: 10, y: 10, width: 40, height: 40), properties: AnnotationProperties())
+    var b = AnnotationItem(type: .oval, bounds: CGRect(x: 200, y: 200, width: 40, height: 40), properties: AnnotationProperties())
+    a.groupId = sharedGroupId
+    b.groupId = sharedGroupId
+    state.annotations = [a, b]
+    state.selectedTool = .selection
+
+    let canvas = DrawingCanvasNSView(state: state)
+    canvas.frame = CGRect(x: 0, y: 0, width: 400, height: 300)
+    canvas.displayScale = 1
+    canvas.canvasBounds = CGRect(x: 0, y: 0, width: 400, height: 300)
+
+    // Click-drag the first group member without ever selecting it beforehand --
+    // the click itself should pull in the whole group and move both together.
+    let start = CGPoint(x: 30, y: 30)
+    let end = CGPoint(x: 60, y: 60)
+    canvas.mouseDown(with: makeMouseEvent(type: .leftMouseDown, location: start))
+    canvas.mouseDragged(with: makeMouseEvent(type: .leftMouseDragged, location: end))
+    canvas.mouseUp(with: makeMouseEvent(type: .leftMouseUp, location: end))
+
+    XCTAssertEqual(state.selectedAnnotationIds, Set([a.id, b.id]))
+    let movedA = try XCTUnwrap(state.annotations.first { $0.id == a.id })
+    let movedB = try XCTUnwrap(state.annotations.first { $0.id == b.id })
+    XCTAssertEqual(movedA.bounds, a.bounds.offsetBy(dx: 30, dy: 30))
+    XCTAssertEqual(movedB.bounds, b.bounds.offsetBy(dx: 30, dy: 30))
   }
 
   @MainActor

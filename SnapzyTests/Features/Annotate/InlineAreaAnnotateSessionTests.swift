@@ -183,6 +183,10 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
     let duplicate = try makeKeyEvent(keyCode: 2, characters: "d", flags: .command)
     let shiftCopy = try makeKeyEvent(keyCode: 8, characters: "C", flags: [.command, .shift])
     let keyUp = try makeKeyEvent(type: .keyUp, keyCode: 8, characters: "c", flags: .command)
+    let group = try makeKeyEvent(keyCode: 5, characters: "g", flags: .command)
+    let ungroup = try makeKeyEvent(keyCode: 5, characters: "G", flags: [.command, .shift])
+    let keyCodeFallbackGroup = try makeKeyEvent(keyCode: 5, characters: "", flags: .command)
+    let keyCodeFallbackUngroup = try makeKeyEvent(keyCode: 5, characters: "", flags: [.command, .shift])
 
     XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: copy, isTextInputActive: false), .copy)
     XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: layoutAwareCopy, isTextInputActive: false), .copy)
@@ -192,6 +196,10 @@ final class InlineAreaAnnotateSessionTests: XCTestCase {
     XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: duplicate, isTextInputActive: false), .duplicate)
     XCTAssertNil(AnnotateWindow.annotationObjectShortcut(for: shiftCopy, isTextInputActive: false))
     XCTAssertNil(AnnotateWindow.annotationObjectShortcut(for: keyUp, isTextInputActive: false))
+    XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: group, isTextInputActive: false), .group)
+    XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: ungroup, isTextInputActive: false), .ungroup)
+    XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: keyCodeFallbackGroup, isTextInputActive: false), .group)
+    XCTAssertEqual(AnnotateWindow.annotationObjectShortcut(for: keyCodeFallbackUngroup, isTextInputActive: false), .ungroup)
   }
 
   func testAnnotateObjectShortcutsKeepTextAndInputFieldCommandsNative() throws {

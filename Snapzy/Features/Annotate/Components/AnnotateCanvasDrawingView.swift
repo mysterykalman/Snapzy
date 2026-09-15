@@ -866,7 +866,11 @@ final class DrawingCanvasNSView: NSView {
           // zoom tolerance above. Re-running the model-only hit test here used
           // a fixed image-space tolerance and could select a different result
           // than the one under the pointer at high zoom.
-          state.setSelectedAnnotationIds([annotation.id])
+          if let groupId = annotation.groupId {
+            state.setSelectedAnnotationIds(state.groupMemberIds(for: groupId))
+          } else {
+            state.setSelectedAnnotationIds([annotation.id])
+          }
         }
         beginAnnotationDrag(anchor: annotation, at: imagePoint)
         return

@@ -91,6 +91,13 @@ The `.accessory` activation-policy revert is deferred to a later runloop turn (s
 - Crop edge snapping: while dragging resize handles in Free mode, edges snap to detected content borders (`CropContentAnalyzer` edge profile, computed once per image on crop entry). Toggle in `CropToolbarView` or Settings → Annotate (`annotate.cropSnapToEdgesEnabled`, default on); hold ⌘ mid-drag to temporarily bypass. Snapping skips fixed-aspect/Shift-locked resizes and body moves.
 - Crop auto-crop to content: `A` (or the toolbar button) tightens the current crop rect to detected content borders; falls back to Vision subject-mask bounds on macOS 14+ when edge analysis finds nothing (`ForegroundCutoutService.extractForegroundResult` reuse). Toasts when nothing is detected; Esc still restores the pre-crop rect. A crop rect expanded beyond the source image tightens to the image bounds on the out-of-bounds side(s).
 
+## Group / Ungroup
+
+- `⌘G` groups the current selection (2+ annotations) under a shared `AnnotationItem.groupId`; `⌘⇧G` ungroups every group represented in the current selection (selecting just one member is enough to ungroup the whole group).
+- Clicking any one grouped member selects every member sharing its group id; dragging it moves the whole group together, since group-aware selection feeds directly into the existing multi-select drag machinery (no separate group-move code path).
+- Duplicating or pasting a grouped annotation produces an ungrouped copy (pre-existing behavior of the duplication/paste path, not overridden for groups) — regroup manually if needed.
+- Rubber-band (marquee) selection does not auto-expand to full groups; it only includes whatever the marquee actually intersects.
+
 ## Undo/Redo
 
 - `UndoEntry` = `.annotations(AnnotationSnapshot)` | `.rotation(RotationSnapshot)` — rotation undo never disturbs the annotation path.

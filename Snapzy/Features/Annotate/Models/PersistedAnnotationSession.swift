@@ -105,12 +105,16 @@ struct PersistedAnnotationItem: Codable, Equatable {
   var type: PersistedAnnotationType
   var bounds: CGRect
   var properties: PersistedAnnotationProperties
+  /// Optional so pre-existing sidecars (and older app builds) decode without it --
+  /// nothing was ever grouped before this field existed.
+  var groupId: UUID?
 
   init(item: AnnotationItem) {
     id = item.id
     type = PersistedAnnotationType(annotationType: item.type)
     bounds = item.bounds
     properties = PersistedAnnotationProperties(properties: item.properties)
+    groupId = item.groupId
   }
 
   var annotationItem: AnnotationItem? {
@@ -119,7 +123,8 @@ struct PersistedAnnotationItem: Codable, Equatable {
       id: id,
       type: annotationType,
       bounds: bounds,
-      properties: properties.annotationProperties
+      properties: properties.annotationProperties,
+      groupId: groupId
     )
   }
 }

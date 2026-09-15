@@ -3472,12 +3472,53 @@ final class AnnotateState: ObservableObject {
 
       // Precise hit test
       if annotation.containsPoint(point) {
-        setSelectedAnnotationIds([annotation.id])
+        if let groupId = annotation.groupId {
+          setSelectedAnnotationIds(groupMemberIds(for: groupId))
+        } else {
+          setSelectedAnnotationIds([annotation.id])
+        }
         return annotation
       }
     }
     deselectAnnotation()
     return nil
+  }
+
+  func groupMemberIds(for groupId: UUID) -> Set<UUID> {
+    Set(annotations.filter { $0.groupId == groupId }.map(\.id))
+  }
+
+  /// Groups the current selection (2+ annotations) so future clicks/drags on
+  /// any one member act on all of them together.
+  @discardableResult
+  func groupSelectedAnnotations() -> Bool {
+    guard editingTextAnnotationId == nil, selectedAnnotationIds.count >= 2 else { return false }
+
+    saveState()
+    let newGroupId = UUID()
+    let idsToGroup = selectedAnnotationIds
+    for index in annotations.indices where idsToGroup.contains(annotations[index].id) {
+      annotations[index].groupId = newGroupId
+    }
+    hasUnsavedChanges = true
+    return true
+  }
+
+  /// Ungroups every group represented in the current selection.
+  @discardableResult
+  func ungroupSelectedAnnotations() -> Bool {
+    guard editingTextAnnotationId == nil else { return false }
+    let groupIdsToClear = Set(selectedAnnotations.compactMap(\.groupId))
+    guard !groupIdsToClear.isEmpty else { return false }
+
+    saveState()
+    for index in annotations.indices {
+      if let groupId = annotations[index].groupId, groupIdsToClear.contains(groupId) {
+        annotations[index].groupId = nil
+      }
+    }
+    hasUnsavedChanges = true
+    return true
   }
 
   @discardableResult

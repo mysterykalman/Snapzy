@@ -56,6 +56,8 @@ enum AnnotateObjectShortcut: Equatable {
   case copy
   case paste
   case duplicate
+  case group
+  case ungroup
 }
 
 /// Custom NSWindow for annotation editing with dark mode appearance
@@ -140,16 +142,23 @@ class AnnotateWindow: NSWindow {
   ) -> AnnotateObjectShortcut? {
     guard !isTextInputActive, event.type == .keyDown else { return nil }
     let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-    guard flags.contains(.command),
-          !flags.contains(.control),
-          !flags.contains(.option),
-          !flags.contains(.shift) else { return nil }
+    guard flags.contains(.command), !flags.contains(.control), !flags.contains(.option) else { return nil }
+
+    // Cmd+Shift+G (Ungroup) is the only combination here that carries Shift;
+    // every other shortcut in this function is plain Cmd+<key>.
+    if flags.contains(.shift) {
+      if let characters = event.charactersIgnoringModifiers?.lowercased(), characters == "g" {
+        return .ungroup
+      }
+      return event.keyCode == 5 ? .ungroup : nil
+    }
 
     if let characters = event.charactersIgnoringModifiers?.lowercased(), !characters.isEmpty {
       switch characters {
       case "c": return .copy
       case "v": return .paste
       case "d": return .duplicate
+      case "g": return .group
       default: return nil
       }
     }
@@ -158,6 +167,7 @@ class AnnotateWindow: NSWindow {
     case 8: return .copy
     case 9: return .paste
     case 2: return .duplicate
+    case 5: return .group
     default: return nil
     }
   }
@@ -252,6 +262,12 @@ class AnnotateWindow: NSWindow {
         return true
       case .duplicate:
         interactionState?.duplicateSelectedAnnotations()
+        return true
+      case .group:
+        interactionState?.groupSelectedAnnotations()
+        return true
+      case .ungroup:
+        interactionState?.ungroupSelectedAnnotations()
         return true
       }
     }
