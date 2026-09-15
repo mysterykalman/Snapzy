@@ -20,6 +20,17 @@ struct HistoryContextMenu: View {
       HistoryWindowController.shared.copyToClipboard([record])
     }
 
+    if record.captureType != .video {
+      Menu("Copy As") {
+        Button("Markdown Image") {
+          ClipboardHelper.copyMarkdownImage(from: record.fileURL)
+        }
+        Button("HTML <img>") {
+          ClipboardHelper.copyHTMLImageTag(from: record.fileURL)
+        }
+      }
+    }
+
     Button("Edit") {
       HistoryWindowController.shared.openItem(record)
     }

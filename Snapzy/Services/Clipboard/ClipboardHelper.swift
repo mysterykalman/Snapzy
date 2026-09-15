@@ -57,6 +57,33 @@ enum ClipboardHelper {
     )
   }
 
+  /// Copy a Markdown image reference (`![](file://...)`) for the given
+  /// file -- spec §2.26's "Copy Markdown Image", useful for pasting
+  /// straight into a README/notes doc that already lives alongside the
+  /// capture. Uses the local `file://` URL rather than a cloud link;
+  /// once a capture has a known cloud URL (`CloudUploadHistoryStore`),
+  /// preferring that instead would be a natural follow-up.
+  static func copyMarkdownImage(from url: URL) {
+    let markdown = "![](\(url.absoluteString))"
+    let pasteboard = NSPasteboard.general
+    pasteboard.clearContents()
+    pasteboard.setString(markdown, forType: .string)
+    DiagnosticLogger.shared.log(.info, .clipboard, "Copy Markdown image reference", context: ["file": url.lastPathComponent])
+  }
+
+  /// Copy an HTML `<img>` tag for the given file -- spec §2.26's "Copy
+  /// HTML `<img>`". Escapes the one character (`"`) that would
+  /// otherwise break out of the `src` attribute if a file path ever
+  /// contained it.
+  static func copyHTMLImageTag(from url: URL) {
+    let escapedSrc = url.absoluteString.replacingOccurrences(of: "\"", with: "&quot;")
+    let html = "<img src=\"\(escapedSrc)\">"
+    let pasteboard = NSPasteboard.general
+    pasteboard.clearContents()
+    pasteboard.setString(html, forType: .string)
+    DiagnosticLogger.shared.log(.info, .clipboard, "Copy HTML img tag", context: ["file": url.lastPathComponent])
+  }
+
   /// Copy a video/GIF/media file to clipboard as a file attachment.
   ///
   /// `writeObjects([NSURL])` stays the primary write because AppKit attaches

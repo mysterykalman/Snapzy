@@ -33,6 +33,36 @@ final class ClipboardHelperTests: XCTestCase {
     // Should not crash
   }
 
+  func testCopyMarkdownImage_writesAMarkdownImageReferenceToThePasteboard() {
+    let url = URL(fileURLWithPath: "/tmp/example.png")
+    ClipboardHelper.copyMarkdownImage(from: url)
+
+    let copied = NSPasteboard.general.string(forType: .string)
+    XCTAssertEqual(copied, "![](\(url.absoluteString))")
+  }
+
+  func testCopyHTMLImageTag_writesAnImgTagToThePasteboard() {
+    let url = URL(fileURLWithPath: "/tmp/example.png")
+    ClipboardHelper.copyHTMLImageTag(from: url)
+
+    let copied = NSPasteboard.general.string(forType: .string)
+    XCTAssertEqual(copied, "<img src=\"\(url.absoluteString)\">")
+  }
+
+  func testCopyHTMLImageTag_neverProducesMoreThanTheTwoAttributeDelimiterQuotes() throws {
+    // `URL(fileURLWithPath:)` already percent-encodes a literal `"` in
+    // the path to `%22` (verified: file:///tmp/weird%22name.png), so
+    // the src attribute's own escaping can't be exercised through a
+    // real file URL -- this instead locks in the invariant the
+    // escaping exists to protect either way: exactly two `"` characters
+    // (the attribute's own delimiters), never more.
+    let url = URL(fileURLWithPath: "/tmp/weird\"name.png")
+    ClipboardHelper.copyHTMLImageTag(from: url)
+
+    let copied = try XCTUnwrap(NSPasteboard.general.string(forType: .string))
+    XCTAssertEqual(copied.filter { $0 == "\"" }.count, 2)
+  }
+
   func testCopyImageFromURL_missingFile_logsAndReturns() {
     let missingURL = URL(fileURLWithPath: "/tmp/\(UUID().uuidString)_nonexistent.png")
     ClipboardHelper.copyImage(from: missingURL)
