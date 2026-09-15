@@ -17,6 +17,7 @@ struct HistoryToolbar: View {
   let onExportSelectionAsPDF: () -> Void
   let onExportSelectionAsPowerPoint: () -> Void
   let onExportSelectionAsContactSheet: () -> Void
+  let onCompareSelection: () -> Void
 
   @AppStorage(PreferencesKeys.historyBackgroundStyle) private var backgroundStyle: HistoryBackgroundStyle = .defaultStyle
   @Environment(\.colorScheme) private var colorScheme
@@ -85,6 +86,14 @@ struct HistoryToolbar: View {
         systemName: "xmark.circle",
         action: onClearSelection
       )
+
+      if selectedCount == 2 {
+        selectionButton(
+          title: L10n.PreferencesHistory.compareSelection,
+          systemName: "rectangle.on.rectangle",
+          action: onCompareSelection
+        )
+      }
 
       Menu {
         Button(L10n.PreferencesHistory.exportSelectionAsPDF, action: onExportSelectionAsPDF)

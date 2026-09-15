@@ -9240,6 +9240,11 @@ nonisolated enum L10n {
       defaultValue: "Export as PowerPoint",
       comment: "Menu item: export selected history captures as a PowerPoint presentation"
     )
+    static let compareSelection = string(
+      "preferences-history.compare-selection",
+      defaultValue: "Compare",
+      comment: "Button title for comparing exactly two selected history captures"
+    )
     static let exportSelectionAsContactSheet = string(
       "preferences-history.export-selection-as-contact-sheet",
       defaultValue: "Export as Contact Sheet",

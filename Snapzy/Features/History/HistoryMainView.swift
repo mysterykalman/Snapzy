@@ -40,7 +40,8 @@ struct HistoryMainView: View {
           onDeleteSelection: deleteSelectedRecords,
           onExportSelectionAsPDF: { exportSelectedRecords(as: .pdf) },
           onExportSelectionAsPowerPoint: { exportSelectedRecords(as: .pptx) },
-          onExportSelectionAsContactSheet: exportSelectedRecordsAsContactSheet
+          onExportSelectionAsContactSheet: exportSelectedRecordsAsContactSheet,
+          onCompareSelection: compareSelectedRecords
         )
 
         HistoryFilterBar(
@@ -138,6 +139,24 @@ struct HistoryMainView: View {
     } catch {
       DiagnosticLogger.shared.logError(.history, error, "History selection export failed", context: ["format": format.defaultFileName])
     }
+  }
+
+  /// Opens the two currently-selected captures (screenshot/GIF only) in
+  /// the Compare Captures window -- the first UI caller of the entire
+  /// visual-diff engine (Services/Diff/ImageDiff.swift etc.) built
+  /// earlier this session. No-ops unless exactly 2 comparable records
+  /// are selected (the toolbar button only appears at exactly 2).
+  private func compareSelectedRecords() {
+    let comparable = selectedRecords.filter { $0.captureType != .video }
+    guard comparable.count == 2,
+      let beforeImage = NSImage(contentsOfFile: comparable[0].filePath)?.cgImage(forProposedRect: nil, context: nil, hints: nil),
+      let afterImage = NSImage(contentsOfFile: comparable[1].filePath)?.cgImage(forProposedRect: nil, context: nil, hints: nil)
+    else { return }
+
+    CaptureComparisonWindowController.shared.showComparison(
+      before: beforeImage, beforeLabel: comparable[0].fileName,
+      after: afterImage, afterLabel: comparable[1].fileName
+    )
   }
 
   /// Composes every selected screenshot/GIF into one contact-sheet image
