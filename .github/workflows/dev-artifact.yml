@@ -51,23 +51,42 @@ jobs:
 
           tail -20 build/dev-build.log
 
-      - name: Package artifact
+      - name: Build native host (universal)
+        run: |
+          set -euo pipefail
+          swift build --package-path native-host -c release --arch arm64 --arch x86_64 --product snapzy-native-host
+          HOST_BIN_DIR="$(swift build --package-path native-host -c release --arch arm64 --arch x86_64 --show-bin-path)"
+          APP_PATH="build/DerivedData/Build/Products/Release/Snapzy.app"
+          mkdir -p "$APP_PATH/Contents/Helpers" "$APP_PATH/Contents/Resources/BrowserBridge"
+          cp "$HOST_BIN_DIR/snapzy-native-host" "$APP_PATH/Contents/Helpers/"
+          ditto extensions/chromium/src "$APP_PATH/Contents/Resources/BrowserBridge/chromium/src"
+          cp extensions/chromium/manifest.json "$APP_PATH/Contents/Resources/BrowserBridge/chromium/"
+          cp scripts/install-native-host.sh "$APP_PATH/Contents/Resources/BrowserBridge/"
+          codesign --force --sign - "$APP_PATH/Contents/Helpers/snapzy-native-host"
+          # Adding resources changes the app seal; renew it after embedding.
+          codesign --force --sign - "$APP_PATH"
+
+      - name: Inspect and archive app
         run: |
           set -euo pipefail
           APP_PATH="build/DerivedData/Build/Products/Release/Snapzy.app"
-          if [ ! -d "$APP_PATH" ]; then
-            echo "::error::Snapzy.app not found at expected path"
-            exit 1
-          fi
-          codesign -dvv "$APP_PATH" 2>&1 || true
+          python3 scripts/verify-app-bundle.py "$APP_PATH"
+          codesign --verify --deep --strict --verbose=2 "$APP_PATH"
           mkdir -p build/dist
           ditto "$APP_PATH" build/dist/Capture.app
+          # Archive before upload: upload-artifact does not preserve executable modes.
+          ditto -c -k --sequesterRsrc --keepParent build/dist/Capture.app build/dist/Capture-dev.zip
+          mkdir -p build/archive-check
+          ditto -x -k build/dist/Capture-dev.zip build/archive-check
+          python3 scripts/verify-app-bundle.py build/archive-check/Capture.app
+          codesign --verify --deep --strict build/archive-check/Capture.app
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v7
         with:
           name: Capture-dev-${{ github.sha }}
-          path: build/dist/Capture.app
+          path: build/dist/Capture-dev.zip
+          if-no-files-found: error
           retention-days: 14
 
       - name: Upload build log on failure

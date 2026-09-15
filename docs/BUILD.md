@@ -144,3 +144,35 @@ xcodebuild ... CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO build
 xcodebuild -project Snapzy.xcodeproj -scheme Snapzy clean
 rm -rf ~/Library/Developer/Xcode/DerivedData/Snapzy-*
 ```
+
+## Personal artifact and browser bridge (release-readiness checkpoint)
+
+Dev Artifact Build packages `Capture-dev.zip` inside the workflow artifact.
+Extract both archive layers, then move `Capture.app` to Applications. The inner
+archive preserves the app bundle structure, symlinks and executable modes.
+The build includes a universal native host and the unpacked Chrome extension.
+No Xcode, Swift compiler, Homebrew or jq is required to install the bundled host.
+
+1. In Chrome, open `chrome://extensions`, enable Developer mode, and load unpacked
+   `/Applications/Capture.app/Contents/Resources/BrowserBridge/chromium`.
+2. Copy the extension's 32-letter ID.
+3. Run (replace `EXTENSION_ID` with that ID):
+
+   ```sh
+   bash /Applications/Capture.app/Contents/Resources/BrowserBridge/install-native-host.sh EXTENSION_ID /Applications/Capture.app
+   ```
+
+4. Enable Browser Bridge in the app's Preferences, then reload the extension.
+5. Assign the accessibility/ecommerce audit commands at `chrome://extensions/shortcuts`.
+   Open an ordinary HTTPS page, run an audit, and open Inspection Results in the app.
+
+The installer copies the helper into the existing user Application Support
+location and registers only the supplied extension ID. Re-run after updating
+the app or changing the extension ID. Existing Snapzy bundle IDs, preferences,
+socket paths and history locations are intentionally preserved for compatibility.
+
+The artifact workflow checks the executable, universal host, compiled localization
+tables, permission resources, extension script inventory, Mach-O dependencies and
+code signature, including after an archive round trip. This does not establish
+translation completeness or interactive correctness. Real Chrome and Mac capture,
+permissions, editor, export and history smoke tests are still required.

@@ -31,6 +31,20 @@ jobs:
           mkdir -p build/swift-module-cache
           swift -module-cache-path build/swift-module-cache tools/localization/CatalogTool.swift verify
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify browser bridge and extension
+        run: |
+          set -euo pipefail
+          npm ci --prefix extensions/chromium
+          npm test --prefix extensions/chromium
+          swift test --package-path Packages/BrowserBridgeKit
+          swift build --package-path native-host
+          swift run --skip-build --package-path native-host snapzy-bridge-verify
+
       - name: Run tests
         env:
           # The following tests crash on GitHub Actions macOS runners (Swift concurrency /
