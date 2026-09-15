@@ -84,7 +84,7 @@ nonisolated enum AnnotationToolType: String, CaseIterable, Identifiable {
     case .blur: return "b"
     case .spotlight: return "s"
     case .counter: return "n"
-    case .stamp: return "k"
+    case .stamp: return "d"
     case .watermark: return "w"
     case .pencil: return "p"
     case .mockup: return "m"
