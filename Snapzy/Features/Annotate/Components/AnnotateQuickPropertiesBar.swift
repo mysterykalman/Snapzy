@@ -135,6 +135,17 @@ private enum QuickPropertiesDensity {
     }
   }
 
+  var stampIconControlWidth: CGFloat {
+    let buttonCount = CGFloat(StampIcon.allCases.count)
+    let spacing: CGFloat = 5
+    switch self {
+    case .regular:
+      return buttonCount * 28 + (buttonCount - 1) * spacing + 48
+    case .compact:
+      return buttonCount * 24 + (buttonCount - 1) * spacing + 40
+    }
+  }
+
   var toolPickerWidth: CGFloat {
     switch self {
     case .regular: return 148
@@ -194,6 +205,7 @@ struct AnnotateQuickPropertiesBar: View {
     let showBlurType = state.quickPropertiesSupportsBlurType
     let showCounterStyle = state.quickPropertiesSupportsCounterStyle
     let showCounterStartValue = state.quickPropertiesSupportsCounterStartValue
+    let showStampIcon = state.quickPropertiesSupportsStampIcon
     let showStrokeWidth = state.quickPropertiesSupportsStrokeWidth
     let showCornerRadius = state.quickPropertiesSupportsCornerRadius
     let showLineStyle = state.quickPropertiesSupportsLineStyle
@@ -206,6 +218,7 @@ struct AnnotateQuickPropertiesBar: View {
       || showWatermark
       || showBlurType
       || showCounterStyle
+      || showStampIcon
       || showStrokeWidth
       || showCornerRadius
       || showLineStyle
@@ -222,7 +235,8 @@ struct AnnotateQuickPropertiesBar: View {
     let hasBeforeBlurType = hasBeforeWatermarkRotation || showWatermark
     let hasBeforeCounterStyle = hasBeforeBlurType || showBlurType
     let hasBeforeCounterStartValue = hasBeforeCounterStyle || showCounterStyle
-    let hasBeforeSpotlightOpacity = hasBeforeCounterStartValue || showCounterStartValue
+    let hasBeforeStampIcon = hasBeforeCounterStartValue || showCounterStartValue
+    let hasBeforeSpotlightOpacity = hasBeforeStampIcon || showStampIcon
     let hasBeforeStrokeWidth = hasBeforeSpotlightOpacity || state.quickPropertiesSupportsSpotlightOpacity
     let hasBeforeCornerRadius = hasBeforeStrokeWidth || showStrokeWidth
     let hasBeforeLineStyle = hasBeforeCornerRadius || showCornerRadius
@@ -423,6 +437,19 @@ struct AnnotateQuickPropertiesBar: View {
       ) {
         QuickCounterStartValueControl(
           value: state.quickCounterStartValueBinding,
+          groupSpacing: density.groupSpacing
+        )
+      }
+
+      activePropertySlot(
+        isVisible: showStampIcon,
+        isEnabled: state.quickPropertiesSupportsStampIcon,
+        showsLeadingDivider: hasBeforeStampIcon,
+        width: density.stampIconControlWidth
+      ) {
+        QuickStampIconControl(
+          selectedIcon: state.quickStampIconBinding,
+          buttonWidth: density.controlButtonWidth,
           groupSpacing: density.groupSpacing
         )
       }
@@ -1803,6 +1830,42 @@ private struct QuickCounterStyleControl: View {
           }
           .buttonStyle(.plain)
           .help(style.displayName)
+        }
+      }
+    }
+  }
+}
+
+private struct QuickStampIconControl: View {
+  @Binding var selectedIcon: StampIcon
+  let buttonWidth: CGFloat
+  let groupSpacing: CGFloat
+
+  var body: some View {
+    QuickPropertiesGroup(title: L10n.AnnotateUI.stampIconTitle, spacing: groupSpacing) {
+      HStack(spacing: 5) {
+        ForEach(StampIcon.allCases) { icon in
+          Button {
+            selectedIcon = icon
+          } label: {
+            Image(systemName: icon.systemImageName)
+              .font(.system(size: 12, weight: .semibold))
+              .foregroundColor(.white)
+              .frame(width: buttonWidth, height: 24)
+              .background(
+                RoundedRectangle(cornerRadius: 7)
+                  .fill(icon.defaultColor.opacity(selectedIcon == icon ? 1 : 0.45))
+              )
+              .overlay(
+                RoundedRectangle(cornerRadius: 7)
+                  .stroke(
+                    selectedIcon == icon ? Color.accentColor.opacity(0.6) : Color.secondary.opacity(0.14),
+                    lineWidth: selectedIcon == icon ? 1.5 : 1
+                  )
+              )
+          }
+          .buttonStyle(.plain)
+          .help(icon.displayName)
         }
       }
     }

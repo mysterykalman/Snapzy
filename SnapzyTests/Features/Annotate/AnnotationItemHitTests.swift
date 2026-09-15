@@ -78,6 +78,16 @@ final class AnnotationItemHitTests: XCTestCase {
     XCTAssertFalse(item.containsPoint(CGPoint(x: 100, y: 100)))
   }
 
+  func testStamp_containsPoint_insideEllipse() {
+    let item = AnnotationItem(type: .stamp(.check), bounds: CGRect(x: 40, y: 40, width: 20, height: 20), properties: AnnotationProperties())
+    XCTAssertTrue(item.containsPoint(CGPoint(x: 50, y: 50)))
+  }
+
+  func testStamp_containsPoint_outside() {
+    let item = AnnotationItem(type: .stamp(.check), bounds: CGRect(x: 40, y: 40, width: 20, height: 20), properties: AnnotationProperties())
+    XCTAssertFalse(item.containsPoint(CGPoint(x: 100, y: 100)))
+  }
+
   // MARK: - selectionBounds / resizeBounds
 
   func testResizeBounds_straightArrow_returnsGeometryBounds() {

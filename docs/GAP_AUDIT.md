@@ -73,7 +73,7 @@
 |---|---|---|
 | Core annotation set (arrow/rect/ellipse/text/freehand/highlighter/spotlight/blur/watermark) | A | Full, real implementations |
 | Counter annotation formats (A,B,C / roman / custom start / auto-renumber) | B → mostly closed | Numeric/alphabetic/Roman styles + custom start value implemented (`CounterNumberingStyle`, quick properties bar picker). Auto-renumber-on-delete deliberately deferred: it would silently change other counters' displayed values whenever one is removed, a bigger UX/undo-semantics decision than this pass, not just a rendering change. |
-| **Stamps** (check/X/warning/bug/CRO) | **C** | Entirely missing, high value given Inspection Results feature exists |
+| **Stamps** (check/X/warning/bug/CRO) | **Closed** | Implemented as `AnnotationType.stamp(StampIcon)` -- a click-to-place circular badge sharing Counter's sizing, with a 5-icon picker (check/cross/warning/bug/CRO-target) in the quick properties bar. Each icon has a fixed semantic color rather than a free color picker. |
 | **Measurement annotation tool** | **C** | No measurement/ruler/guide object exists in the editor at all |
 | Group/ungroup, lock, hide, explicit z-order, align, distribute | C | None of these exist on annotation objects |
 | Tiled rendering for huge scrolling images | C | No `CATiledLayer`/chunked decode anywhere — real memory-safety gap for very tall captures |

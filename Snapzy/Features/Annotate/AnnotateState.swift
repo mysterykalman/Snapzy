@@ -249,6 +249,7 @@ final class AnnotateState: ObservableObject {
   @Published var watermarkText: String = "Snapzy"
   @Published var counterNumberingStyle: CounterNumberingStyle = .numeric
   @Published var counterStartValue: Int = 1
+  @Published var selectedStampIcon: StampIcon = .check
   @Published var spotlightOpacity: CGFloat = 0.5
   @Published private var annotationToolProperties: [AnnotationToolType: AnnotationProperties] = [:]
   private var isQuickPropertiesGestureEditing = false
@@ -2786,7 +2787,7 @@ final class AnnotateState: ObservableObject {
         clockwise: clockwise
       )
 
-    case .rectangle, .filledRectangle, .oval, .blur, .counter, .watermark, .embeddedImage, .spotlight:
+    case .rectangle, .filledRectangle, .oval, .blur, .counter, .stamp, .watermark, .embeddedImage, .spotlight:
       // Bounds-only annotations: the rotated `bounds` above is the full transform we need.
       // Watermark `rotationDegrees` is user-controlled and clamped to ±45°, so we leave it
       // unchanged while moving the watermark region with the canvas.
@@ -3674,6 +3675,13 @@ final class AnnotateState: ObservableObject {
     annotations[index].type = .counter(value: value, style: style)
   }
 
+  func updateStampIcon(id: UUID, icon: StampIcon) {
+    guard let index = annotations.firstIndex(where: { $0.id == id }),
+          case .stamp = annotations[index].type else { return }
+
+    annotations[index].type = .stamp(icon)
+  }
+
   /// Update annotation properties (strokeWidth, fontSize, colors)
   func updateAnnotationProperties(
     id: UUID,
@@ -3982,6 +3990,13 @@ final class AnnotateState: ObservableObject {
     }
   }
 
+  private var selectedStampAnnotations: [AnnotationItem] {
+    selectedAnnotations.filter { annotation in
+      if case .stamp = annotation.type { return true }
+      return false
+    }
+  }
+
   private var selectedWatermarkAnnotations: [AnnotationItem] {
     selectedAnnotations.filter { annotation in
       if case .watermark = annotation.type { return true }
@@ -4153,6 +4168,23 @@ final class AnnotateState: ObservableObject {
       counterAnnotations.forEach { updateCounterNumberingStyle(id: $0.id, style: style) }
     } else {
       counterNumberingStyle = style
+    }
+  }
+
+  var activeStampIcon: StampIcon {
+    if let annotation = selectedStampAnnotations.first,
+       case .stamp(let icon) = annotation.type {
+      return icon
+    }
+    return selectedStampIcon
+  }
+
+  func setActiveStampIcon(_ icon: StampIcon) {
+    let stampAnnotations = selectedStampAnnotations
+    if !stampAnnotations.isEmpty {
+      stampAnnotations.forEach { updateStampIcon(id: $0.id, icon: icon) }
+    } else {
+      selectedStampIcon = icon
     }
   }
 
@@ -5197,6 +5229,34 @@ final class AnnotateState: ObservableObject {
       },
       set: { [weak self] newValue in
         self?.counterStartValue = max(1, newValue)
+      }
+    )
+  }
+
+  var quickPropertiesSupportsStampIcon: Bool {
+    guard editorMode == .annotate,
+          selectedTool != .crop else {
+      return false
+    }
+
+    let selected = quickPropertiesSelectionAnnotations
+    if !selected.isEmpty {
+      return selected.contains {
+        if case .stamp = $0.type { return true }
+        return false
+      }
+    }
+
+    return quickPropertiesTool == .stamp
+  }
+
+  var quickStampIconBinding: Binding<StampIcon> {
+    Binding(
+      get: { [weak self] in
+        self?.activeStampIcon ?? .check
+      },
+      set: { [weak self] newIcon in
+        self?.setActiveStampIcon(newIcon)
       }
     )
   }

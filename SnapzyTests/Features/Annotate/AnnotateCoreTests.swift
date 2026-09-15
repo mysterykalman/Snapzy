@@ -918,6 +918,65 @@ final class AnnotateCoreTests: XCTestCase {
     XCTAssertEqual(state.counterNumberingStyle, .numeric)
   }
 
+  func testAnnotationFactory_createsStampCenteredAtStart() {
+    let annotation = AnnotationFactory.createAnnotation(
+      tool: .stamp,
+      from: CGPoint(x: 50, y: 60),
+      to: CGPoint(x: 50, y: 60),
+      path: [],
+      context: makeContext(stampIcon: .bug)
+    )
+
+    guard case .stamp(let icon) = annotation?.type, icon == .bug else {
+      return XCTFail("Expected a bug stamp, got \(String(describing: annotation?.type))")
+    }
+    XCTAssertEqual(annotation?.bounds, CGRect(x: 38, y: 48, width: 24, height: 24))
+  }
+
+  @MainActor
+  func testSetActiveStampIcon_updatesGlobalDefaultWhenNothingSelected() {
+    let state = makeAnnotateState()
+
+    state.setActiveStampIcon(.warning)
+
+    XCTAssertEqual(state.selectedStampIcon, .warning)
+    XCTAssertEqual(state.activeStampIcon, .warning)
+  }
+
+  @MainActor
+  func testSetActiveStampIcon_updatesSelectedStampAnnotationInPlace() {
+    let state = makeAnnotateState()
+    let stamp = AnnotationItem(type: .stamp(.check), bounds: .zero, properties: AnnotationProperties())
+    state.annotations = [stamp]
+    state.setSelectedAnnotationIds([stamp.id])
+
+    state.setActiveStampIcon(.cro)
+
+    guard case .stamp(let icon) = state.annotations[0].type else {
+      return XCTFail("Expected a stamp annotation")
+    }
+    XCTAssertEqual(icon, .cro)
+    // Editing an existing stamp must not disturb the global default used by new stamps.
+    XCTAssertEqual(state.selectedStampIcon, .check)
+  }
+
+  @MainActor
+  func testQuickPropertiesSupportsStampIcon_visibleForBothNewAndSelectedStamps() {
+    let state = makeAnnotateState()
+    let stamp = AnnotationItem(type: .stamp(.check), bounds: .zero, properties: AnnotationProperties())
+    state.annotations = [stamp]
+    state.activateTool(.stamp)
+
+    XCTAssertTrue(state.quickPropertiesSupportsStampIcon)
+
+    state.setSelectedAnnotationIds([stamp.id])
+
+    XCTAssertTrue(
+      state.quickPropertiesSupportsStampIcon,
+      "Unlike the counter start value, the icon picker is meaningful for an existing selected stamp too."
+    )
+  }
+
   @MainActor
   func testQuickPropertiesSupportsCounterStartValue_hiddenWhenACounterIsSelected() {
     let state = makeAnnotateState()
@@ -961,7 +1020,7 @@ final class AnnotateCoreTests: XCTestCase {
       XCTAssertTrue(tool.requiresDragToCreateAnnotation, "\(tool) should not create a new item from an empty click.")
     }
 
-    for tool in [AnnotationToolType.selection, .crop, .text, .highlighter, .counter, .pencil, .mockup] {
+    for tool in [AnnotationToolType.selection, .crop, .text, .highlighter, .counter, .stamp, .pencil, .mockup] {
       XCTAssertFalse(tool.requiresDragToCreateAnnotation, "\(tool) keeps its existing non-drag behavior.")
     }
   }
@@ -2813,6 +2872,7 @@ final class AnnotateCoreTests: XCTestCase {
     arrowBendDirection: ArrowBendDirection = .primary,
     blurType: BlurType = .pixelated,
     counterValue: Int = 1,
+    stampIcon: StampIcon = .check,
     watermarkText: String = "Snapzy",
     bounds: CGRect = CGRect(x: 0, y: 0, width: 400, height: 300)
   ) -> AnnotationFactory.CreationContext {
@@ -2822,6 +2882,7 @@ final class AnnotateCoreTests: XCTestCase {
       arrowBendDirection: arrowBendDirection,
       blurType: blurType,
       counterValue: counterValue,
+      stampIcon: stampIcon,
       watermarkText: watermarkText,
       activeAnnotationBounds: bounds
     )

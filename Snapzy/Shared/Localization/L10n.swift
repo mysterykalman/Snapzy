@@ -6338,6 +6338,36 @@ nonisolated enum L10n {
       defaultValue: "Start At",
       comment: "Section title for the control that sets the next counter annotation's starting number"
     )
+    static let stampIconTitle = string(
+      "annotate.stamp-icon-title",
+      defaultValue: "Icon",
+      comment: "Section title for the stamp annotation's icon picker controls"
+    )
+    static let stampCheck = string(
+      "annotate.stamp-check",
+      defaultValue: "Check",
+      comment: "Label for the checkmark stamp icon"
+    )
+    static let stampCross = string(
+      "annotate.stamp-cross",
+      defaultValue: "Cross",
+      comment: "Label for the X/cross stamp icon"
+    )
+    static let stampWarning = string(
+      "annotate.stamp-warning",
+      defaultValue: "Warning",
+      comment: "Label for the warning triangle stamp icon"
+    )
+    static let stampBug = string(
+      "annotate.stamp-bug",
+      defaultValue: "Bug",
+      comment: "Label for the bug stamp icon"
+    )
+    static let stampCRO = string(
+      "annotate.stamp-cro",
+      defaultValue: "CRO",
+      comment: "Label for the conversion-rate-optimization (CRO) target stamp icon"
+    )
     static let pixelated = string(
       "annotate.pixelated",
       defaultValue: "Pixelated",
@@ -8269,6 +8299,11 @@ nonisolated enum L10n {
     static let counterTool = string(
       "annotate.tool.counter",
       defaultValue: "Counter",
+      comment: "Annotation tool display name"
+    )
+    static let stampTool = string(
+      "annotate.tool.stamp",
+      defaultValue: "Stamp",
       comment: "Annotation tool display name"
     )
     static let watermarkTool = string(

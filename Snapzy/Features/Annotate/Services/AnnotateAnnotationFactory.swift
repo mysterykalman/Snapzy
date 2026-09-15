@@ -20,6 +20,7 @@ enum AnnotationFactory {
     var blurType: BlurType
     var counterValue: Int
     var counterStyle: CounterNumberingStyle = .numeric
+    var stampIcon: StampIcon = .check
     var watermarkText: String
     var activeAnnotationBounds: CGRect
   }
@@ -46,6 +47,7 @@ enum AnnotationFactory {
         blurType: state.blurType,
         counterValue: state.nextCounterValue(),
         counterStyle: state.counterNumberingStyle,
+        stampIcon: state.selectedStampIcon,
         watermarkText: state.watermarkText,
         activeAnnotationBounds: state.activeAnnotationBounds
       )
@@ -120,6 +122,9 @@ enum AnnotationFactory {
     case .counter:
       type = .counter(value: context.counterValue, style: context.counterStyle)
 
+    case .stamp:
+      type = .stamp(context.stampIcon)
+
     case .watermark:
       let text = context.watermarkText.trimmingCharacters(in: .whitespacesAndNewlines)
       type = .watermark(text.isEmpty ? "Snapzy" : text)
@@ -133,7 +138,7 @@ enum AnnotationFactory {
     switch annotationType {
     case .arrow(let geometry):
       bounds = geometry.bounds()
-    case .counter:
+    case .counter, .stamp:
       let diameter = AnnotationProperties.counterDiameter(for: properties.strokeWidth)
       bounds = CGRect(
         x: start.x - diameter / 2,

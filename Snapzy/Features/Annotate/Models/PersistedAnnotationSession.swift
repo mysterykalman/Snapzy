@@ -126,7 +126,7 @@ struct PersistedAnnotationItem: Codable, Equatable {
 
 struct PersistedAnnotationType: Codable, Equatable {
   enum Kind: String, Codable {
-    case path, rectangle, filledRectangle, oval, arrow, line, text, highlight, blur, counter, watermark, embeddedImage, spotlight
+    case path, rectangle, filledRectangle, oval, arrow, line, text, highlight, blur, counter, stamp, watermark, embeddedImage, spotlight
   }
 
   var kind: Kind
@@ -140,6 +140,7 @@ struct PersistedAnnotationType: Codable, Equatable {
   /// Optional so pre-existing sidecars (and older app builds) decode without it,
   /// defaulting to `.numeric` -- the only style that ever existed before this field.
   var counterNumberingStyle: String?
+  var stampIcon: String?
   var embeddedImageAssetId: UUID?
 
   init(annotationType: AnnotationType) {
@@ -173,6 +174,9 @@ struct PersistedAnnotationType: Codable, Equatable {
       kind = .counter
       counterValue = value
       counterNumberingStyle = style.rawValue
+    case .stamp(let icon):
+      kind = .stamp
+      stampIcon = icon.rawValue
     case .watermark(let value):
       kind = .watermark
       text = value
@@ -210,6 +214,8 @@ struct PersistedAnnotationType: Codable, Equatable {
         value: counterValue ?? 1,
         style: CounterNumberingStyle(rawValue: counterNumberingStyle ?? "") ?? .numeric
       )
+    case .stamp:
+      return .stamp(StampIcon(rawValue: stampIcon ?? "") ?? .check)
     case .watermark:
       return .watermark(text ?? "")
     case .embeddedImage:

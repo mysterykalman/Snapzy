@@ -102,6 +102,9 @@ nonisolated struct AnnotationRenderer {
     case .counter(let value, let style):
       drawCounter(value: value, style: style, in: annotation.bounds, properties: annotation.properties)
 
+    case .stamp(let icon):
+      drawStamp(icon: icon, in: annotation.bounds, properties: annotation.properties)
+
     case .blur(let blurType):
       drawBlur(
         bounds: annotation.bounds,
@@ -446,6 +449,37 @@ nonisolated struct AnnotationRenderer {
       y: rect.midY - textSize.height / 2
     )
     text.draw(at: textPoint, withAttributes: attributes)
+  }
+
+  private func drawStamp(icon: StampIcon, in bounds: CGRect, properties: AnnotationProperties) {
+    let rect: CGRect
+    if bounds.standardized.isEmpty {
+      let size = AnnotationProperties.counterDiameter(for: properties.strokeWidth)
+      rect = CGRect(x: bounds.origin.x - size / 2, y: bounds.origin.y - size / 2, width: size, height: size)
+    } else {
+      rect = bounds.standardized
+    }
+
+    // Stamp color is fixed per icon (matching common review/status conventions) rather
+    // than user-selectable, so the same icon always reads the same meaning at a glance.
+    context.setFillColor(NSColor(icon.defaultColor).cgColor)
+    context.fillEllipse(in: rect)
+
+    let symbolPointSize = min(max(rect.height * 0.45, 9), 44)
+    let symbolConfiguration = NSImage.SymbolConfiguration(pointSize: symbolPointSize, weight: .bold)
+      .applying(NSImage.SymbolConfiguration(paletteColors: [.white]))
+    guard let symbolImage = NSImage(systemSymbolName: icon.systemImageName, accessibilityDescription: nil)?
+      .withSymbolConfiguration(symbolConfiguration)
+    else { return }
+
+    let imageSize = symbolImage.size
+    let imageRect = CGRect(
+      x: rect.midX - imageSize.width / 2,
+      y: rect.midY - imageSize.height / 2,
+      width: imageSize.width,
+      height: imageSize.height
+    )
+    symbolImage.draw(in: imageRect)
   }
 
   private func drawText(_ content: String, in bounds: CGRect, properties: AnnotationProperties) {

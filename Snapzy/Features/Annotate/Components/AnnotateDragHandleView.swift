@@ -584,6 +584,8 @@ private struct DragFallbackSignature: Equatable {
       return "blur|\(blurType.rawValue)"
     case .counter(let value, let style):
       return "counter|\(value)|\(style.rawValue)"
+    case .stamp(let icon):
+      return "stamp|\(icon.rawValue)"
     case .watermark(let text):
       return "watermark|\(text)"
     case .embeddedImage(let assetId):

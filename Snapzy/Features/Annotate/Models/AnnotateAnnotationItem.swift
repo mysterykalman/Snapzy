@@ -153,6 +153,49 @@ nonisolated enum CounterNumberingStyle: String, CaseIterable, Identifiable, Equa
   }
 }
 
+/// Fixed icon choices for the Stamp annotation -- quick semantic markers for
+/// review/QA workflows (e.g. flagging findings directly on a screenshot).
+nonisolated enum StampIcon: String, CaseIterable, Identifiable, Equatable {
+  case check
+  case cross
+  case warning
+  case bug
+  case cro
+
+  var id: String { rawValue }
+
+  var displayName: String {
+    switch self {
+    case .check: L10n.AnnotateUI.stampCheck
+    case .cross: L10n.AnnotateUI.stampCross
+    case .warning: L10n.AnnotateUI.stampWarning
+    case .bug: L10n.AnnotateUI.stampBug
+    case .cro: L10n.AnnotateUI.stampCRO
+    }
+  }
+
+  var systemImageName: String {
+    switch self {
+    case .check: "checkmark"
+    case .cross: "xmark"
+    case .warning: "exclamationmark.triangle.fill"
+    case .bug: "ladybug.fill"
+    case .cro: "target"
+    }
+  }
+
+  /// A sensible default badge color per icon, matching common review/status conventions.
+  var defaultColor: Color {
+    switch self {
+    case .check: .green
+    case .cross: .red
+    case .warning: .orange
+    case .bug: .purple
+    case .cro: .blue
+    }
+  }
+}
+
 nonisolated enum TextPresentation: String, CaseIterable, Identifiable, Equatable {
   case plain
   case label
@@ -1275,7 +1318,9 @@ extension AnnotationItem {
       copy.type = .path(points.map { Self.remapPoint($0, from: oldBounds, to: normalizedBounds) })
     case .highlight(let points):
       copy.type = .highlight(points.map { Self.remapPoint($0, from: oldBounds, to: normalizedBounds) })
-    case .counter:
+    case .counter, .stamp:
+      // Both are the same circular-badge shape, snapped back to a valid
+      // diameter/strokeWidth pair after a free-form resize drag.
       let diameter = max(normalizedBounds.width, normalizedBounds.height)
       let controlValue = AnnotationProperties.controlValue(forCounterDiameter: diameter)
       let counterDiameter = AnnotationProperties.counterDiameter(for: controlValue)
@@ -1356,6 +1401,7 @@ nonisolated enum AnnotationType: Equatable {
   case highlight([CGPoint])
   case blur(BlurType)
   case counter(value: Int, style: CounterNumberingStyle)
+  case stamp(StampIcon)
   case watermark(String)
   case embeddedImage(UUID)
   case spotlight
@@ -1373,6 +1419,7 @@ nonisolated enum AnnotationType: Equatable {
     case .highlight: .highlighter
     case .blur: .blur
     case .counter: .counter
+    case .stamp: .stamp
     case .watermark: .watermark
     case .embeddedImage: .selection
     case .spotlight: .spotlight
@@ -1547,6 +1594,9 @@ extension AnnotationItem {
     case .counter:
       let counterBounds = bounds.isEmpty ? Self.counterBounds(center: bounds.origin, properties: properties) : bounds
       return Self.normalizedBounds(counterBounds)
+    case .stamp:
+      let stampBounds = bounds.isEmpty ? Self.stampBounds(center: bounds.origin, properties: properties) : bounds
+      return Self.normalizedBounds(stampBounds)
     default:
       return Self.normalizedBounds(bounds)
     }
@@ -1632,6 +1682,10 @@ extension AnnotationItem {
     case .counter:
       let counterBounds = bounds.isEmpty ? Self.counterBounds(center: bounds.origin, properties: properties) : bounds
       return pointInEllipse(point, in: counterBounds.insetBy(dx: -baseTolerance, dy: -baseTolerance))
+
+    case .stamp:
+      let stampBounds = bounds.isEmpty ? Self.stampBounds(center: bounds.origin, properties: properties) : bounds
+      return pointInEllipse(point, in: stampBounds.insetBy(dx: -baseTolerance, dy: -baseTolerance))
     }
   }
 
@@ -1720,6 +1774,11 @@ extension AnnotationItem {
       width: diameter,
       height: diameter
     )
+  }
+
+  /// Stamps use the same circular-badge sizing as Counter.
+  private static func stampBounds(center: CGPoint, properties: AnnotationProperties) -> CGRect {
+    counterBounds(center: center, properties: properties)
   }
 
   private func distanceToSegment(_ point: CGPoint, from start: CGPoint, to end: CGPoint) -> CGFloat {
