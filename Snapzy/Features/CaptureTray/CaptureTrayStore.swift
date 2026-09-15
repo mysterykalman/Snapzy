@@ -15,6 +15,7 @@
 
 import Combine
 import Foundation
+import SwiftUI
 
 @MainActor
 final class CaptureTrayStore: ObservableObject {

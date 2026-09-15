@@ -19,7 +19,7 @@ final class AnnotateExporter {
     DiagnosticLogger.shared.log(.info, .annotate, "Save As dialog opened")
     guard state.hasImage else { return }
     let panel = NSSavePanel()
-    panel.allowedContentTypes = [.png, .jpeg, .webP]
+    panel.allowedContentTypes = [.png, .jpeg, .webP, .tiff, .heic]
     panel.nameFieldStringValue = generateFileName(from: state.sourceURL, isCombine: state.isCombineMode)
     panel.canCreateDirectories = true
 
@@ -205,8 +205,9 @@ final class AnnotateExporter {
     return image.cgImage(forProposedRect: nil, context: nil, hints: nil)
   }
 
-  /// Convert NSImage to Data for any supported format (PNG, JPEG, WebP)
-  /// Uses CGImageDestination for WebP support (macOS 14+)
+  /// Convert NSImage to Data for any supported format (PNG, JPEG, TIFF,
+  /// HEIC, WebP). Uses CGImageDestination for everything except WebP,
+  /// which ImageIO can't encode (see WebPEncoderService below).
   nonisolated static func imageData(from image: NSImage, for fileExtension: String) -> Data? {
     guard let cgImage = bestCGImage(from: image) else {
       return nil
@@ -220,11 +221,16 @@ final class AnnotateExporter {
       return WebPEncoderService.encode(cgImage)
     }
 
-    // PNG/JPEG: use CGImageDestination
+    // PNG/JPEG/TIFF/HEIC: use CGImageDestination (all natively supported
+    // by ImageIO, no extra encoder needed the way WebP requires above).
     let utType: CFString
     switch ext {
     case "jpg", "jpeg":
       utType = "public.jpeg" as CFString
+    case "tif", "tiff":
+      utType = "public.tiff" as CFString
+    case "heic", "heif":
+      utType = "public.heic" as CFString
     default:
       utType = "public.png" as CFString
     }

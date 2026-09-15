@@ -93,6 +93,28 @@ final class AnnotateExporterTests: XCTestCase {
     XCTAssertGreaterThan(data?.count ?? 0, 0)
   }
 
+  func testImageData_tiffEncoding() {
+    guard let cgImage = TestImageFactory.solidColor(width: 10, height: 10) else {
+      XCTFail("Failed to create test image")
+      return
+    }
+    let nsImage = NSImage(cgImage: cgImage, size: NSSize(width: 10, height: 10))
+    let data = AnnotateExporter.imageData(from: nsImage, for: "tiff")
+    XCTAssertNotNil(data)
+    XCTAssertGreaterThan(data?.count ?? 0, 0)
+  }
+
+  func testImageData_heicEncoding() {
+    guard let cgImage = TestImageFactory.solidColor(width: 10, height: 10) else {
+      XCTFail("Failed to create test image")
+      return
+    }
+    let nsImage = NSImage(cgImage: cgImage, size: NSSize(width: 10, height: 10))
+    let data = AnnotateExporter.imageData(from: nsImage, for: "heic")
+    XCTAssertNotNil(data)
+    XCTAssertGreaterThan(data?.count ?? 0, 0)
+  }
+
   func testImageData_unknownExtension_fallsBackToPNG() {
     guard let cgImage = TestImageFactory.solidColor(width: 10, height: 10) else {
       XCTFail("Failed to create test image")
