@@ -3,7 +3,9 @@ import XCTest
 
 final class SocketTransportTests: XCTestCase {
     private func temporarySocketURL() -> URL {
-        URL(fileURLWithPath: NSTemporaryDirectory())
+        // Darwin sun_path is limited to 104 bytes. Runner NSTemporaryDirectory
+        // prefixes plus a UUID can exceed it before the socket name is appended.
+        URL(fileURLWithPath: "/tmp", isDirectory: true)
             .appendingPathComponent("browser-bridge-test-\(UUID().uuidString)")
             .appendingPathComponent("socket")
     }
@@ -15,7 +17,10 @@ final class SocketTransportTests: XCTestCase {
         let socketURL = temporarySocketURL()
         let server = BridgeSocketServer(socketURL: socketURL, handler: handler)
         try server.start()
-        defer { server.stop() }
+        defer {
+            server.stop()
+            try? FileManager.default.removeItem(at: socketURL.deletingLastPathComponent())
+        }
         let client = BridgeSocketClient(socketURL: socketURL)
         try body(socketURL, client)
     }
