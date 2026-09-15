@@ -11,14 +11,50 @@ import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
+/// Spec §2.25's "Audit board views: by page / category / severity /
+/// status" -- findings can be grouped along any one of these four axes
+/// rather than only severity.
+enum InspectionFindingGrouping: String, CaseIterable, Identifiable {
+  case severity = "Severity"
+  case category = "Category"
+  case page = "Page"
+  case status = "Status"
+
+  var id: String { rawValue }
+
+  func key(for finding: AuditFinding) -> String {
+    switch self {
+    case .severity: return finding.severity
+    case .category: return finding.category
+    case .page: return finding.page
+    case .status: return finding.status.rawValue
+    }
+  }
+
+  /// Preferred group ordering for this axis, when known (severity has
+  /// a meaningful default order; page/category/status groups are
+  /// simply sorted alphabetically since there's no universal ranking).
+  var preferredOrder: [String]? {
+    switch self {
+    case .severity: return AuditFinding.DefaultSeverity.all
+    case .category, .page, .status: return nil
+    }
+  }
+}
+
 struct InspectionResultsView: View {
   @ObservedObject var store: InspectionFindingsStore
+  @State private var grouping: InspectionFindingGrouping = .severity
 
-  private var findingsBySeverity: [(severity: String, findings: [AuditFinding])] {
-    let grouped = Dictionary(grouping: store.findings, by: \.severity)
-    return AuditFinding.DefaultSeverity.all
-      .filter { grouped[$0] != nil }
-      .map { ($0, grouped[$0] ?? []) }
+  private var groupedFindings: [(key: String, findings: [AuditFinding])] {
+    let grouped = Dictionary(grouping: store.findings) { grouping.key(for: $0) }
+    let orderedKeys: [String]
+    if let preferredOrder = grouping.preferredOrder {
+      orderedKeys = preferredOrder.filter { grouped[$0] != nil }
+    } else {
+      orderedKeys = grouped.keys.sorted()
+    }
+    return orderedKeys.map { ($0, grouped[$0] ?? []) }
   }
 
   private var hasAnyResults: Bool {
@@ -34,8 +70,8 @@ struct InspectionResultsView: View {
         emptyState
       } else {
         List {
-          ForEach(findingsBySeverity, id: \.severity) { group in
-            Section(group.severity) {
+          ForEach(groupedFindings, id: \.key) { group in
+            Section(group.key) {
               ForEach(group.findings) { finding in
                 FindingRow(finding: finding)
               }
@@ -92,6 +128,13 @@ struct InspectionResultsView: View {
       Text("\(store.findings.count) finding\(store.findings.count == 1 ? "" : "s")")
         .font(.subheadline)
         .foregroundStyle(.secondary)
+      Picker("Group by", selection: $grouping) {
+        ForEach(InspectionFindingGrouping.allCases) { grouping in
+          Text(grouping.rawValue).tag(grouping)
+        }
+      }
+      .labelsHidden()
+      .fixedSize()
       Menu {
         Button("Export as Markdown") { exportReport(format: .markdown) }
         Button("Export as HTML") { exportReport(format: .html) }
