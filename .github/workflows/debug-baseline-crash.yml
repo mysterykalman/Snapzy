@@ -6,6 +6,8 @@ name: Debug Baseline Store Crash
 # full symbolicated macOS crash report this environment cannot gather
 # locally (no Xcode/lldb here). Delete this file once the crash is
 # root-caused.
+#
+# Re-run trigger: verifying the nonisolated deinit fix on DatabaseManager.
 
 on:
   push:
