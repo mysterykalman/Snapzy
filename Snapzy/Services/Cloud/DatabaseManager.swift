@@ -285,6 +285,12 @@ final class DatabaseManager: @unchecked Sendable {
       )
     }
 
+    migrator.registerMigration("v4_addOCRTextToCaptureHistory") { db in
+      try db.alter(table: "captureHistoryRecord") { t in
+        t.add(column: "ocrText", .text)
+      }
+    }
+
     return migrator
   }
 

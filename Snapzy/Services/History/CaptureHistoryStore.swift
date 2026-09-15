@@ -310,6 +310,33 @@ final class CaptureHistoryStore: ObservableObject {
     }
   }
 
+  /// Store OCR-extracted text for a record, making it match full-text
+  /// search even when its file name doesn't. `nil` marks a record as
+  /// "OCR found no text" rather than "not yet indexed" -- callers that
+  /// only want to (re-)index un-indexed records should check
+  /// `record.ocrText == nil` on the record they already have, not rely
+  /// on this method to distinguish the two.
+  func updateOCRText(id: UUID, text: String?) {
+    guard let dbPool = requireDatabase(for: "update capture history OCR text") else { return }
+
+    do {
+      try dbPool.write { db in
+        if var record = try CaptureHistoryRecord.fetchOne(db, id: id) {
+          record.ocrText = text
+          try record.update(db)
+        }
+      }
+    } catch {
+      logger.error("Failed to update OCR text: \(error.localizedDescription)")
+      DiagnosticLogger.shared.logError(
+        .history,
+        error,
+        "Capture history OCR text update failed",
+        context: ["recordId": id.uuidString]
+      )
+    }
+  }
+
   /// Update the file path for a record (e.g. after save-to-export moves the file)
   func updateFilePath(id: UUID, newPath: String) {
     guard let dbPool = requireDatabase(for: "update capture history file path") else { return }
@@ -589,6 +616,7 @@ final class CaptureHistoryStore: ObservableObject {
     )
 
     add(record)
+    HistoryOCRIndexer.shared.indexIfNeeded(record)
   }
 
   /// Clear all thumbnail paths without deleting records

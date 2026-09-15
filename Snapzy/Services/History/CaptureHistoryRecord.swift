@@ -39,6 +39,10 @@ struct CaptureHistoryRecord: Identifiable, Codable, Equatable, FetchableRecord, 
   var duration: TimeInterval?
   var thumbnailPath: String?
   var isDeleted: Bool
+  /// Text extracted from the capture via OCR, if it's been indexed for
+  /// full-text search -- `nil` until `HistoryOCRIndexer` processes this
+  /// record (or if OCR found no text / the record isn't a screenshot).
+  var ocrText: String? = nil
 
   /// Human-readable file size
   var formattedFileSize: String {
