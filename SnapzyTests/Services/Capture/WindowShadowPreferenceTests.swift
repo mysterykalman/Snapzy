@@ -18,4 +18,15 @@ final class WindowShadowPreferenceTests: XCTestCase {
     // Default must keep shadow ON so existing users see no behavior change.
     XCTAssertEqual(WindowShadowPreference.defaultIncludeShadow, true)
   }
+
+  // `resolvedIncludeShadow` reads the live, real `NSEvent.modifierFlags`
+  // (Option-click captures a window without its shadow) with no
+  // injectable seam -- there's no way to simulate "Option is held" in a
+  // headless CI runner. This only exercises the deterministic branch
+  // (Option genuinely not held while the test runs, which is always
+  // true in CI): the stored preference passes through unchanged.
+  func testResolvedIncludeShadow_passesThroughStoredPreferenceWhenOptionIsNotHeld() {
+    XCTAssertEqual(WindowShadowPreference.resolvedIncludeShadow(storedIncludeShadow: true), true)
+    XCTAssertEqual(WindowShadowPreference.resolvedIncludeShadow(storedIncludeShadow: false), false)
+  }
 }
