@@ -3466,6 +3466,30 @@ nonisolated enum L10n {
       defaultValue: "Overlay",
       comment: "Capture preferences section title"
     )
+    static let delayedCaptureSection = string(
+      "preferences-capture.delayed-capture-section",
+      defaultValue: "Delayed Capture",
+      comment: "Capture preferences section title"
+    )
+    static let captureDelayTitle = string(
+      "preferences-capture.capture-delay-title",
+      defaultValue: "Countdown Before Capture",
+      comment: "Capture preferences setting title"
+    )
+    static func captureDelayDescription(_ seconds: Int) -> String {
+      seconds == 0
+        ? string(
+          "preferences-capture.capture-delay-description-off",
+          defaultValue: "Delayed capture (snapzy://capture/delayed) fires immediately with no countdown",
+          comment: "Capture preferences setting description when the delay is 0 seconds"
+        )
+        : format(
+          "preferences-capture.capture-delay-description",
+          defaultValue: "Delayed capture (snapzy://capture/delayed) shows a %d-second countdown before capturing an area",
+          comment: "Capture preferences setting description. %d is the countdown length in seconds.",
+          seconds
+        )
+    }
     static let magnifierZoomSection = string(
       "preferences-capture.magnifier-zoom-section",
       defaultValue: "Magnifier Zoom",

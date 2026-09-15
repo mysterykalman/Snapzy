@@ -48,6 +48,7 @@ struct CaptureSettingsView: View {
   @AppStorage(PreferencesKeys.screenshotAutoDetectElementUnderCursor) private var autoDetectElementUnderCursor = false
   @AppStorage(PreferencesKeys.screenshotShowMagnifierByDefault) private var showMagnifierByDefault = false
   @AppStorage(PreferencesKeys.screenshotShowMagnifierColorPanel) private var showMagnifierColorPanel = true
+  @AppStorage(PreferencesKeys.captureDelaySeconds) private var captureDelaySeconds = 3
 
   @AppStorage(PreferencesKeys.screenshotFormat) private var screenshotFormat = "png"
   @AppStorage(PreferencesKeys.scrollingCaptureShowHints) private var scrollingCaptureShowHints = true
@@ -174,6 +175,30 @@ struct CaptureSettingsView: View {
             ) {
               Toggle("", isOn: $hideDesktopWidgets)
                 .labelsHidden()
+            }
+          }
+
+          Section(L10n.PreferencesCapture.delayedCaptureSection) {
+            SettingRow(
+              icon: "timer",
+              title: L10n.PreferencesCapture.captureDelayTitle,
+              description: L10n.PreferencesCapture.captureDelayDescription(captureDelaySeconds)
+            ) {
+              HStack(spacing: 8) {
+                Text("\(captureDelaySeconds)s")
+                  .frame(width: 32, alignment: .trailing)
+                  .monospacedDigit()
+                  .foregroundColor(.secondary)
+                Stepper(
+                  "",
+                  value: Binding(
+                    get: { captureDelaySeconds },
+                    set: { captureDelaySeconds = $0 }
+                  ),
+                  in: 0...30
+                )
+                .labelsHidden()
+              }
             }
           }
 

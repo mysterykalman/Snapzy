@@ -21287,6 +21287,266 @@
           }
         }
       }
+    },
+    "preferences-capture.delayed-capture-section": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verzögerte Aufnahme"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delayed Capture"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Captura retardada"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capture différée"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "遅延キャプチャ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지연 캡처"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отложенный захват"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chụp trễ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "延迟捕获"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "延遲擷取"
+          }
+        }
+      }
+    },
+    "preferences-capture.capture-delay-title": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Countdown vor der Aufnahme"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Countdown Before Capture"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuenta regresiva antes de capturar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compte à rebours avant la capture"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キャプチャ前のカウントダウン"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캡처 전 카운트다운"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Обратный отсчёт перед захватом"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đếm ngược trước khi chụp"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "捕获前倒计时"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "擷取前倒數計時"
+          }
+        }
+      }
+    },
+    "preferences-capture.capture-delay-description": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die verzögerte Aufnahme (snapzy://capture/delayed) zeigt vor der Bereichsaufnahme einen %d-Sekunden-Countdown"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delayed capture (snapzy://capture/delayed) shows a %d-second countdown before capturing an area"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La captura retardada (snapzy://capture/delayed) muestra una cuenta regresiva de %d segundos antes de capturar un área"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La capture différée (snapzy://capture/delayed) affiche un compte à rebours de %d secondes avant de capturer une zone"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "遅延キャプチャ (snapzy://capture/delayed) は、範囲をキャプチャする前に%d秒のカウントダウンを表示します"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지연 캡처(snapzy://capture/delayed)는 영역을 캡처하기 전에 %d초 카운트다운을 표시합니다"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отложенный захват (snapzy://capture/delayed) показывает обратный отсчёт %d секунд перед захватом области"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chụp trễ (snapzy://capture/delayed) hiển thị đếm ngược %d giây trước khi chụp vùng"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "延迟捕获 (snapzy://capture/delayed) 会在捕获区域前显示 %d 秒倒计时"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "延遲擷取 (snapzy://capture/delayed) 會在擷取區域前顯示 %d 秒倒數計時"
+          }
+        }
+      }
+    },
+    "preferences-capture.capture-delay-description-off": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die verzögerte Aufnahme (snapzy://capture/delayed) löst sofort ohne Countdown aus"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delayed capture (snapzy://capture/delayed) fires immediately with no countdown"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La captura retardada (snapzy://capture/delayed) se activa de inmediato sin cuenta regresiva"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La capture différée (snapzy://capture/delayed) se déclenche immédiatement sans compte à rebours"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "遅延キャプチャ (snapzy://capture/delayed) はカウントダウンなしですぐに実行されます"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지연 캡처(snapzy://capture/delayed)는 카운트다운 없이 즉시 실행됩니다"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отложенный захват (snapzy://capture/delayed) срабатывает немедленно без отсчёта"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chụp trễ (snapzy://capture/delayed) kích hoạt ngay lập tức không đếm ngược"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "延迟捕获 (snapzy://capture/delayed) 将立即执行，没有倒计时"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "延遲擷取 (snapzy://capture/delayed) 會立即執行，沒有倒數計時"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

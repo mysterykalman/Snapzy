@@ -73,6 +73,7 @@ enum PreferencesKeys {
   static let screenshotShowMagnifierByDefault = "screenshot.showMagnifierByDefault"
   static let screenshotShowMagnifierColorPanel = "screenshot.showMagnifierColorPanel"
   static let screenshotLastAreaRect = "screenshot.lastAreaRect"
+  static let captureDelaySeconds = "capture.delaySeconds"
   static let scrollingCaptureShowHints = "scrollingCapture.showHints"
   static let backgroundCutoutAutoCropEnabled = "backgroundCutout.autoCropEnabled"
   static let annotateCanvasPresets = "annotate.canvasPresets.v1"

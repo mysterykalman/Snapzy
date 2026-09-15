@@ -104,6 +104,17 @@ struct SnapzyDeepLinkHandler {
       FigmaOverlayManager.shared.toggle()
     case .openInspectionResults:
       InspectionResultsWindowController.shared.showWindow()
+    case .delayedCapture(let seconds):
+      // @AppStorage's own default (3) only ever lands in UserDefaults
+      // once the preferences view has actually set it; reading through
+      // plain UserDefaults before that would silently see 0 (no delay)
+      // instead of that default, so fall back to it explicitly here.
+      let storedSeconds = UserDefaults.standard.object(forKey: PreferencesKeys.captureDelaySeconds) as? Int
+      let effectiveSeconds = seconds ?? storedSeconds ?? 3
+      DelayedCaptureCountdownOverlay.present(seconds: effectiveSeconds) { [screenCaptureViewModel] didComplete in
+        guard didComplete else { return }
+        screenCaptureViewModel.captureArea()
+      }
     }
   }
 }
@@ -132,6 +143,7 @@ enum SnapzyDeepLinkAction: Equatable {
   case ruler
   case designOverlay
   case openInspectionResults
+  case delayedCapture(seconds: Int?)
 
   init?(url: URL) {
     guard url.scheme?.lowercased() == "snapzy" else { return nil }
@@ -190,6 +202,8 @@ enum SnapzyDeepLinkAction: Equatable {
       self = .designOverlay
     case "inspect/results", "inspection-results", "open/inspection-results":
       self = .openInspectionResults
+    case "capture/delayed", "delayed-capture", "timed-capture":
+      self = .delayedCapture(seconds: Self.delaySeconds(from: components))
     case let value where value.hasPrefix("settings/"):
       self = .openSettings(Self.preferencesTab(from: components, pathParts: pathParts))
     case let value where value.hasPrefix("preferences/"):
@@ -224,6 +238,7 @@ enum SnapzyDeepLinkAction: Equatable {
     case .ruler: return "ruler"
     case .designOverlay: return "designOverlay"
     case .openInspectionResults: return "openInspectionResults"
+    case .delayedCapture(let seconds): return "delayedCapture(\(seconds.map(String.init) ?? "default"))"
     }
   }
 
@@ -237,6 +252,13 @@ enum SnapzyDeepLinkAction: Equatable {
         }
         return URL(fileURLWithPath: (value as NSString).expandingTildeInPath).standardizedFileURL
       } ?? []
+  }
+
+  private static func delaySeconds(from components: URLComponents?) -> Int? {
+    components?.queryItems?
+      .first(where: { $0.name.lowercased() == "seconds" })?
+      .value
+      .flatMap { Int($0) }
   }
 
   private static func preferencesTab(from components: URLComponents?, pathParts: [String]) -> PreferencesTab? {
